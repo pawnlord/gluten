@@ -48,4 +48,10 @@ namespace gm {
 		glDrawArrays(GL_TRIANGLES, 0, buffer_size); // Starting from vertex 0; 3 vertices total -> 1 triangle
         return 1;
     }
+    GLuint genBuffer(GLuint* buffer, GLuint buffer_size, GLfloat* buffer_data) {
+        glGenBuffers(1, buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, *buffer);
+        glBufferData(GL_ARRAY_BUFFER, buffer_size, buffer_data, GL_STATIC_DRAW);
+        return 1;
+    }
 }

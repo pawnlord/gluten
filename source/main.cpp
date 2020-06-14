@@ -120,26 +120,16 @@ int main(){
 
     // This will identify our vertex buffer
     GLuint vertexbuffer;
-    glGenBuffers(1, &vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
+	gm::genBuffer(&vertexbuffer, sizeof(g_vertex_buffer_data), g_vertex_buffer_data);
 	GLuint colorbuffer;
-	glGenBuffers(1, &colorbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
+	gm::genBuffer(&colorbuffer, sizeof(g_color_buffer_data), g_color_buffer_data);
 	
     // This will identify our vertex buffer
     GLuint tri_vertexbuffer;
-    glGenBuffers(1, &tri_vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, tri_vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(tri_vertex_buffer_data), tri_vertex_buffer_data, GL_STATIC_DRAW);
-
+	gm::genBuffer(&tri_vertexbuffer, sizeof(tri_vertex_buffer_data), tri_vertex_buffer_data);
 	GLuint tri_colorbuffer;
-	glGenBuffers(1, &tri_colorbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, tri_colorbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tri_color_buffer_data), tri_color_buffer_data, GL_STATIC_DRAW);
-	
+	gm::genBuffer(&tri_colorbuffer, sizeof(tri_color_buffer_data), tri_color_buffer_data);
+		
 	glm::mat4 Projection;
 	gm::setupGraphicsManager(window, Projection, 45.0f);
 	GLfloat t = 0;
@@ -183,7 +173,7 @@ int main(){
 			tri_colorbuffer,
 			3*3
 		);
-		
+
 		glDisableVertexAttribArray(0);
         
 		// Swap buffers

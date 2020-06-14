@@ -15,4 +15,5 @@ namespace gm {
                         GLuint programID, GLuint vertexbuffer, GLuint colorbuffer,
                         int buffer_size
                     );
+    GLuint genBuffer(GLuint* buffer, GLuint buffer_size, GLfloat* buffer_data);
 }
