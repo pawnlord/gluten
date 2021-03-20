@@ -19,6 +19,8 @@ using namespace glm;
 
 #include "../include/ResourceManager.h"
 #include "../include/GraphicsManager.h"
+#include "../include/InputManager.h"
+
 
 static  GLfloat g_vertex_buffer_data[] = {
     -1.0f,-1.0f,-1.0f, // triangle 1 : begin
@@ -59,26 +61,48 @@ static  GLfloat g_vertex_buffer_data[] = {
     1.0f,-1.0f, 1.0f
 };
 
-static GLfloat tri_vertex_buffer_data[] = {
-   -1.0f, -1.0f, 0.0f,
-   1.0f, -1.0f, 0.0f,
-   0.0f,  1.0f, 0.0f,
-};
-
-static GLfloat tri_color_buffer_data[] = {
-   1.0f, 1.0f, 1.0f,
-   1.0f, 1.0f, 1.0f,
-   1.0f,  1.0f, 1.0f,
+// Two UV coordinatesfor each vertex. They were created with Blender. You'll learn shortly how to do this yourself.
+static GLfloat g_uv_buffer_data[] = {
+    0.000059f, 1.0f-0.000004f,
+    0.000103f, 1.0f-0.336048f,
+    0.335973f, 1.0f-0.335903f,
+    1.000023f, 1.0f-0.000013f,
+    0.667979f, 1.0f-0.335851f,
+    0.999958f, 1.0f-0.336064f,
+    0.667979f, 1.0f-0.335851f,
+    0.336024f, 1.0f-0.671877f,
+    0.667969f, 1.0f-0.671889f,
+    1.000023f, 1.0f-0.000013f,
+    0.668104f, 1.0f-0.000013f,
+    0.667979f, 1.0f-0.335851f,
+    0.000059f, 1.0f-0.000004f,
+    0.335973f, 1.0f-0.335903f,
+    0.336098f, 1.0f-0.000071f,
+    0.667979f, 1.0f-0.335851f,
+    0.335973f, 1.0f-0.335903f,
+    0.336024f, 1.0f-0.671877f,
+    1.000004f, 1.0f-0.671847f,
+    0.999958f, 1.0f-0.336064f,
+    0.667979f, 1.0f-0.335851f,
+    0.668104f, 1.0f-0.000013f,
+    0.335973f, 1.0f-0.335903f,
+    0.667979f, 1.0f-0.335851f,
+    0.335973f, 1.0f-0.335903f,
+    0.668104f, 1.0f-0.000013f,
+    0.336098f, 1.0f-0.000071f,
+    0.000103f, 1.0f-0.336048f,
+    0.000004f, 1.0f-0.671870f,
+    0.336024f, 1.0f-0.671877f,
+    0.000103f, 1.0f-0.336048f,
+    0.336024f, 1.0f-0.671877f,
+    0.335973f, 1.0f-0.335903f,
+    0.667969f, 1.0f-0.671889f,
+    1.000004f, 1.0f-0.671847f,
+    0.667979f, 1.0f-0.335851f
 };
 
 int main(){
-	static GLfloat g_color_buffer_data[12*3*3];
-	for (int v = 0; v < 12*3 ; v++){
-		g_color_buffer_data[3*v+0] = g_vertex_buffer_data[3*v+0];
-		g_color_buffer_data[3*v+1] = g_vertex_buffer_data[3*v+1];
-		g_color_buffer_data[3*v+2] = g_vertex_buffer_data[3*v+2];
-	}
-    // Initialise GLFW
+   // Initialise GLFW
     if( !glfwInit() )
     {
         fprintf( stderr, "Failed to initialize GLFW\n" );
@@ -121,18 +145,17 @@ int main(){
     // This will identify our vertex buffer
     GLuint vertexbuffer;
 	gm::genBuffer(&vertexbuffer, sizeof(g_vertex_buffer_data), g_vertex_buffer_data);
-	GLuint colorbuffer;
-	gm::genBuffer(&colorbuffer, sizeof(g_color_buffer_data), g_color_buffer_data);
+	GLuint uvbuffer;
+	gm::genBuffer(&uvbuffer, sizeof(g_uv_buffer_data), g_uv_buffer_data);
 	
-    // This will identify our vertex buffer
-    GLuint tri_vertexbuffer;
-	gm::genBuffer(&tri_vertexbuffer, sizeof(tri_vertex_buffer_data), tri_vertex_buffer_data);
-	GLuint tri_colorbuffer;
-	gm::genBuffer(&tri_colorbuffer, sizeof(tri_color_buffer_data), tri_color_buffer_data);
-		
 	glm::mat4 Projection;
 	gm::setupGraphicsManager(window, Projection, 45.0f);
 	GLfloat t = 0;
+	GLuint textureID = rm::loadBMP("textureExample.bmp");
+	GLuint textureID2 = rm::loadBMP("textureExample2.bmp");
+	
+	glfwSetScrollCallback(window, im::scrollCallback);
+
     do{
         // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -142,36 +165,37 @@ int main(){
 		// Or, for an ortho camera :
 		//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 		
+		im::computeMatricesFromInputs(window);
+		
 		// Camera matrix
-		glm::mat4 View = glm::lookAt(
-			glm::vec3(4,4,4),
-			glm::vec3(0,0,0), 
-			glm::vec3(0,1,0) 
-		);
+		glm::mat4 View = im::getViewMatrix();
+		Projection = im::getProjectionMatrix();
 		
 		// Model matrix : an identity matrix (model will be at the origin)
 		glm::mat4 Model = glm::mat4(1.0f);
-		
+		gm::loadTexture(textureID);
 		Model = glm::rotate(Model, glm::radians(t), glm::vec3(1, 1, 0)); 
-		
-		gm::drawArray(0, 3, 
+		gm::drawTexturedArray(0, 3, 
 			Projection, View, Model,
 		 	g_vertex_buffer_data, 
-			g_color_buffer_data, 
+			g_uv_buffer_data, 
 			programID,
 			vertexbuffer, 
-			colorbuffer,
+			uvbuffer,
 			12*3
 		);
-		Model = glm::translate(Model, glm::vec3(0, 0, 1.001));
-		gm::drawArray(0, 3, 
+
+		gm::loadTexture(textureID2);
+		Model = glm::rotate(Model, glm::radians(-t), glm::vec3(1, 1, 0)); 
+	
+		gm::drawTexturedArray(0, 3, 
 			Projection, View, Model,
-		 	tri_vertex_buffer_data, 
-			tri_color_buffer_data, 
+		 	g_vertex_buffer_data, 
+			g_uv_buffer_data, 
 			programID,
-			tri_vertexbuffer, 
-			tri_colorbuffer,
-			3*3
+			vertexbuffer, 
+			uvbuffer,
+			12*3
 		);
 
 		glDisableVertexAttribArray(0);
