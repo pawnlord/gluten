@@ -3,6 +3,7 @@
 
 #define GLEW_STATIC
 #include <stdio.h>
+#include <iostream>
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
 // Include GLM
@@ -20,24 +21,29 @@ namespace im {
     // position
     glm::vec3 position = glm::vec3( 0, 0, 5 );
     // horizontal angle : toward -Z
-    float horizontalAngle = 3.14f;
+    float horizontalAngle = (2*3.14f)/2+(3.14f/3);
     // vertical angle : 0, look at the horizon
     float verticalAngle = 0.0f;
     // Initial Field of View
     float FoV = 45.0f;
     float speed = 3.0f; // 3 units / second
-    float mouseSpeed = 0.5f;
+    float mouseSpeed = 1.0f;
     void computeMatricesFromInputs(GLFWwindow* window){
         double currentTime = glfwGetTime();
         float deltaTime = float(currentTime - lastTime);
         // Get mouse position
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
+        // Get the window dimensions
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+
         // Reset mouse position for next frame
-        glfwSetCursorPos(window, 1024/2, 768/2);
+        glfwSetCursorPos(window, width/2, height/2);
         // Compute new orientation
-        horizontalAngle += mouseSpeed * deltaTime * float(1024/2 - xpos );
-        verticalAngle   += mouseSpeed * deltaTime * float( 768/2 - ypos );
+        horizontalAngle += mouseSpeed * deltaTime * float( width/2 - xpos );
+        verticalAngle   += mouseSpeed * deltaTime * float( height/2 - ypos );
+        verticalAngle = glm::clamp(verticalAngle, -3.14f/2, 3.14f/2);
         lastTime = currentTime;
 
         // Direction : Spherical coordinates to Cartesian coordinates conversion
@@ -57,19 +63,19 @@ namespace im {
         // Up vector : perpendicular to both direction and right
         glm::vec3 up = glm::cross( right, direction );
         // Move forward
-        if (glfwGetKey(window, GLFW_KEY_UP ) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_W ) == GLFW_PRESS){
             position += direction * deltaTime * speed;
         }
         // Move backward
-        if (glfwGetKey(window, GLFW_KEY_DOWN ) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_S ) == GLFW_PRESS){
             position -= direction * deltaTime * speed;
         }
         // Strafe right
-        if (glfwGetKey(window, GLFW_KEY_RIGHT ) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_D ) == GLFW_PRESS){
             position += right * deltaTime * speed;
         }
         // Strafe left
-        if (glfwGetKey(window, GLFW_KEY_LEFT ) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_A ) == GLFW_PRESS){
             position -= right * deltaTime * speed;
         }
         // Projection matrix : 45&deg; Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units

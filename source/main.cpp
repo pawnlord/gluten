@@ -22,84 +22,103 @@ using namespace glm;
 #include "../include/InputManager.h"
 
 
-static  GLfloat g_vertex_buffer_data[] = {
-    -1.0f,-1.0f,-1.0f, // triangle 1 : begin
-    -1.0f,-1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f, // triangle 1 : end
-    1.0f, 1.0f,-1.0f, // triangle 2 : begin
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f,-1.0f, // triangle 2 : end
-    1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f,-1.0f,
-    1.0f,-1.0f,-1.0f,
-    1.0f, 1.0f,-1.0f,
-    1.0f,-1.0f,-1.0f,
-    -1.0f,-1.0f,-1.0f,
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f,-1.0f,
-    1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    -1.0f,-1.0f, 1.0f,
-    1.0f,-1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    1.0f,-1.0f,-1.0f,
-    1.0f, 1.0f,-1.0f,
-    1.0f,-1.0f,-1.0f,
-    1.0f, 1.0f, 1.0f,
-    1.0f,-1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f,-1.0f,
-    -1.0f, 1.0f,-1.0f,
-    1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f,
-    1.0f,-1.0f, 1.0f
+static  std::vector<vec3> g_vertex_buffer_data = {
+    vec3(-1.0f,-1.0f,-1.0f), // triangle 1 : begin
+    vec3(-1.0f,-1.0f, 1.0f),
+    vec3(-1.0f, 1.0f, 1.0f), // triangle 1 : end
+    vec3(1.0f, 1.0f,-1.0f), // triangle 2 : begin
+    vec3(-1.0f,-1.0f,-1.0f),
+    vec3(-1.0f, 1.0f,-1.0f), // triangle 2 : end
+    vec3(1.0f,-1.0f, 1.0f),
+    vec3(-1.0f,-1.0f,-1.0f),
+    vec3(1.0f,-1.0f,-1.0f),
+    vec3(1.0f, 1.0f,-1.0f),
+    vec3(1.0f,-1.0f,-1.0f),
+    vec3(-1.0f,-1.0f,-1.0f),
+    vec3(-1.0f,-1.0f,-1.0f),
+    vec3(-1.0f, 1.0f, 1.0f),
+    vec3(-1.0f, 1.0f,-1.0f),
+    vec3(1.0f,-1.0f, 1.0f),
+    vec3(-1.0f,-1.0f, 1.0f),
+    vec3(-1.0f,-1.0f,-1.0f),
+    vec3(-1.0f, 1.0f, 1.0f),
+    vec3(-1.0f,-1.0f, 1.0f),
+    vec3(1.0f,-1.0f, 1.0f),
+    vec3(1.0f, 1.0f, 1.0f),
+    vec3(1.0f,-1.0f,-1.0f),
+    vec3(1.0f, 1.0f,-1.0f),
+    vec3(1.0f,-1.0f,-1.0f),
+    vec3(1.0f, 1.0f, 1.0f),
+    vec3(1.0f,-1.0f, 1.0f),
+    vec3(1.0f, 1.0f, 1.0f),
+    vec3(1.0f, 1.0f,-1.0f),
+    vec3(-1.0f, 1.0f,-1.0f),
+    vec3(1.0f, 1.0f, 1.0f),
+    vec3(-1.0f, 1.0f,-1.0f),
+    vec3(-1.0f, 1.0f, 1.0f),
+    vec3(1.0f, 1.0f, 1.0f),
+    vec3(-1.0f, 1.0f, 1.0f),
+    vec3(1.0f,-1.0f, 1.0f)
 };
 
 // Two UV coordinatesfor each vertex. They were created with Blender. You'll learn shortly how to do this yourself.
-static GLfloat g_uv_buffer_data[] = {
-    0.000059f, 1.0f-0.000004f,
-    0.000103f, 1.0f-0.336048f,
-    0.335973f, 1.0f-0.335903f,
-    1.000023f, 1.0f-0.000013f,
-    0.667979f, 1.0f-0.335851f,
-    0.999958f, 1.0f-0.336064f,
-    0.667979f, 1.0f-0.335851f,
-    0.336024f, 1.0f-0.671877f,
-    0.667969f, 1.0f-0.671889f,
-    1.000023f, 1.0f-0.000013f,
-    0.668104f, 1.0f-0.000013f,
-    0.667979f, 1.0f-0.335851f,
-    0.000059f, 1.0f-0.000004f,
-    0.335973f, 1.0f-0.335903f,
-    0.336098f, 1.0f-0.000071f,
-    0.667979f, 1.0f-0.335851f,
-    0.335973f, 1.0f-0.335903f,
-    0.336024f, 1.0f-0.671877f,
-    1.000004f, 1.0f-0.671847f,
-    0.999958f, 1.0f-0.336064f,
-    0.667979f, 1.0f-0.335851f,
-    0.668104f, 1.0f-0.000013f,
-    0.335973f, 1.0f-0.335903f,
-    0.667979f, 1.0f-0.335851f,
-    0.335973f, 1.0f-0.335903f,
-    0.668104f, 1.0f-0.000013f,
-    0.336098f, 1.0f-0.000071f,
-    0.000103f, 1.0f-0.336048f,
-    0.000004f, 1.0f-0.671870f,
-    0.336024f, 1.0f-0.671877f,
-    0.000103f, 1.0f-0.336048f,
-    0.336024f, 1.0f-0.671877f,
-    0.335973f, 1.0f-0.335903f,
-    0.667969f, 1.0f-0.671889f,
-    1.000004f, 1.0f-0.671847f,
-    0.667979f, 1.0f-0.335851f
+static std::vector<vec2> g_uv_buffer_data = {
+    vec2(0.000059f, 1.0f-0.000004f),
+    vec2(0.000103f, 1.0f-0.336048f),
+    vec2(0.335973f, 1.0f-0.335903f),
+    vec2(1.000023f, 1.0f-0.000013f),
+    vec2(0.667979f, 1.0f-0.335851f),
+    vec2(0.999958f, 1.0f-0.336064f),
+    vec2(0.667979f, 1.0f-0.335851f),
+    vec2(0.336024f, 1.0f-0.671877f),
+    vec2(0.667969f, 1.0f-0.671889f),
+    vec2(1.000023f, 1.0f-0.000013f),
+    vec2(0.668104f, 1.0f-0.000013f),
+    vec2(0.667979f, 1.0f-0.335851f),
+    vec2(0.000059f, 1.0f-0.000004f),
+    vec2(0.335973f, 1.0f-0.335903f),
+    vec2(0.336098f, 1.0f-0.000071f),
+    vec2(0.667979f, 1.0f-0.335851f),
+    vec2(0.335973f, 1.0f-0.335903f),
+    vec2(0.336024f, 1.0f-0.671877f),
+    vec2(1.000004f, 1.0f-0.671847f),
+    vec2(0.999958f, 1.0f-0.336064f),
+    vec2(0.667979f, 1.0f-0.335851f),
+    vec2(0.668104f, 1.0f-0.000013f),
+    vec2(0.335973f, 1.0f-0.335903f),
+    vec2(0.667979f, 1.0f-0.335851f),
+    vec2(0.335973f, 1.0f-0.335903f),
+    vec2(0.668104f, 1.0f-0.000013f),
+    vec2(0.336098f, 1.0f-0.000071f),
+    vec2(0.000103f, 1.0f-0.336048f),
+    vec2(0.000004f, 1.0f-0.671870f),
+    vec2(0.336024f, 1.0f-0.671877f),
+    vec2(0.000103f, 1.0f-0.336048f),
+    vec2(0.336024f, 1.0f-0.671877f),
+    vec2(0.335973f, 1.0f-0.335903f),
+    vec2(0.667969f, 1.0f-0.671889f),
+    vec2(1.000004f, 1.0f-0.671847f),
+    vec2(0.667979f, 1.0f-0.335851f)
 };
+
+std::vector<GLfloat> unpack_vec3_vector(std::vector<vec3> v){
+    std::vector<GLfloat> arr;
+    for(int i = 0; i < v.size(); i++){
+        arr.push_back(v[i].x);
+        arr.push_back(v[i].y);
+        arr.push_back(v[i].z);
+    }
+    return arr;
+}
+std::vector<GLfloat> unpack_vec2_vector(std::vector<vec2> v){
+    std::vector<GLfloat> arr;
+    for(int i = 0; i < v.size(); i++){
+        arr.push_back(v[i].x);
+        arr.push_back(v[i].y);
+    }
+    return arr;
+}
+
 
 int main(){
    // Initialise GLFW
@@ -141,12 +160,14 @@ int main(){
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
+    std::vector<vec3> normals_buffer_data;
+    rm::loadOBJ("test_obj.obj", g_vertex_buffer_data, g_uv_buffer_data, normals_buffer_data);
 
     // This will identify our vertex buffer
     GLuint vertexbuffer;
-	gm::genBuffer(&vertexbuffer, sizeof(g_vertex_buffer_data), g_vertex_buffer_data);
+	gm::genBuffer(&vertexbuffer, g_vertex_buffer_data.size()*6*3, unpack_vec3_vector(g_vertex_buffer_data).data()); // TODO: why *4?
 	GLuint uvbuffer;
-	gm::genBuffer(&uvbuffer, sizeof(g_uv_buffer_data), g_uv_buffer_data);
+	gm::genBuffer(&uvbuffer, g_uv_buffer_data.size()*6*2, unpack_vec2_vector(g_uv_buffer_data).data());
 	
 	glm::mat4 Projection;
 	gm::setupGraphicsManager(window, Projection, 45.0f);
@@ -177,8 +198,6 @@ int main(){
 		Model = glm::rotate(Model, glm::radians(t), glm::vec3(1, 1, 0)); 
 		gm::drawTexturedArray(0, 3, 
 			Projection, View, Model,
-		 	g_vertex_buffer_data, 
-			g_uv_buffer_data, 
 			programID,
 			vertexbuffer, 
 			uvbuffer,
@@ -190,8 +209,6 @@ int main(){
 	
 		gm::drawTexturedArray(0, 3, 
 			Projection, View, Model,
-		 	g_vertex_buffer_data, 
-			g_uv_buffer_data, 
 			programID,
 			vertexbuffer, 
 			uvbuffer,

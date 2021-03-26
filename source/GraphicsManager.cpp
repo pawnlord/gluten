@@ -51,7 +51,6 @@ namespace gm {
     }
     GLuint drawTexturedArray(int attribLocation, int attribSize, 
                         glm::mat4 Projection,  glm::mat4 View, glm::mat4 Model,
-                        GLfloat g_vertex_buffer_data[], GLfloat g_uv_buffer_data[],
                         GLuint programID, GLuint vertexbuffer, GLuint uvbuffer,
                         int buffer_size){
         

@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #define GLEW_STATIC
 
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
@@ -213,11 +214,27 @@ namespace rm{
                 vertexIndices.push_back(vertexIndex[2]);
                 uvIndices    .push_back(uvIndex[0]);
                 uvIndices    .push_back(uvIndex[1]);
-                uvIndices    .push_back(uvIndex[2]);
+                uvIndices     .push_back(uvIndex[2]);
                 normalIndices.push_back(normalIndex[0]);
                 normalIndices.push_back(normalIndex[1]);
                 normalIndices.push_back(normalIndex[2]);
             }
         }
+        for( unsigned int i=0; i<vertexIndices.size(); i++ ){
+            unsigned int vertexIndex = vertexIndices[i];
+            glm::vec3 vertex = temp_vertices[ vertexIndex-1 ];
+            out_vertices.push_back(vertex);
+        }
+        for( unsigned int i=0; i<uvIndices.size(); i++ ){
+            unsigned int uvIndex = uvIndices[i];
+            glm::vec3 uv= temp_vertices[uvIndex-1 ];
+            out_uvs.push_back(uv);
+        }
+        for( unsigned int i=0; i<normalIndices.size(); i++ ){
+            unsigned int normalIndex = normalIndices[i];
+            glm::vec3 normal= temp_vertices[normalIndex-1 ];
+            out_normals.push_back(normal);
+        }
+        return true;
     }
 }
