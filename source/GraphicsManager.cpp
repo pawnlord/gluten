@@ -1,5 +1,6 @@
 #define GLEW_STATIC
 #include <stdio.h>
+#include <stdlib.h>
 
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
@@ -14,12 +15,60 @@
 
 namespace gm {
     int width = 0, height = 0;
+    
+    GltnGraphicsContext::GltnGraphicsContext(int width, int height, std::string name, float projectionAngle){
+        // Initialise GLFW
+        if( !glfwInit() )
+        {
+            fprintf( stderr, "Failed to initialize GLFW\n" );
+            exit(-1);
+        }
+        glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
+
+        // Open a window and create its OpenGL context
+        window = glfwCreateWindow( width, height, name.c_str(), NULL, NULL);
+        if( window == NULL ){
+            fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
+            glfwTerminate();
+            exit(-1);
+        }
+        glfwMakeContextCurrent(window); // Initialize GLEW
+        glewExperimental=GL_TRUE; // Needed in core profile
+        if (glewInit() != GLEW_OK) {
+            fprintf(stderr, "Failed to initialize GLEW\n");
+            exit(-1);
+        }
+        // Ensure we can capture the escape key being pressed below
+        glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+        // Enable depth test
+        glEnable(GL_DEPTH_TEST);
+        // Accept fragment if it closer to the camera than the former one
+        glDepthFunc(GL_LESS);
+        /* SETUP COMPLETE
+        */
+
+        glGenVertexArrays(1, &VertexArrayID);
+        glBindVertexArray(VertexArrayID);
+
+
+		glfwGetWindowSize(window, &width, &height);
+        // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+		projection = glm::perspective(glm::radians(projectionAngle), (float) width / (float)height, 0.1f, 100.0f);
+        
+        glfwSetCursorPos(window, width/2, height/2);
+    }
+    
     GLuint setupGraphicsManager(GLFWwindow* window, glm::mat4& Projection, float projectionAngle){
 		glfwGetWindowSize(window, &width, &height);
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 		Projection = glm::perspective(glm::radians(projectionAngle), (float) width / (float)height, 0.1f, 100.0f);
         return 1;
     }
+
     GLuint drawColoredArray(int attribLocation, int attribSize, 
                         glm::mat4 Projection,  glm::mat4 View, glm::mat4 Model,
                         GLuint programID, GLuint vertexbuffer, GLuint colorbuffer,
@@ -28,10 +77,10 @@ namespace gm {
         glm::mat4 mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
 		
 		// Get a handle for our "MVP" uniform
-		GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+		GLuint matrixID = glGetUniformLocation(programID, "MVP");
 		
 		// Send our transformation to the currently bound shader, in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
         
 		// 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);
@@ -58,10 +107,10 @@ namespace gm {
         glm::mat4 mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
 		
 		// Get a handle for our "MVP" uniform
-		GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+		GLuint matrixID = glGetUniformLocation(programID, "MVP");
 		
 		// Send our transformation to the currently bound shader, in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
 		
 		// 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);

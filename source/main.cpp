@@ -103,46 +103,10 @@ static std::vector<vec2> g_uv_buffer_data = {
 
 
 int main(){
-   // Initialise GLFW
-    if( !glfwInit() )
-    {
-        fprintf( stderr, "Failed to initialize GLFW\n" );
-        return -1;
-    }
-    glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
 
-    // Open a window and create its OpenGL context
-    GLFWwindow* window; // (In the accompanying source code, this variable is global for simplicity)
-    window = glfwCreateWindow( 1024, 768, "Tutorial 01", NULL, NULL);
-    if( window == NULL ){
-        fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window); // Initialize GLEW
-    glewExperimental=GL_TRUE; // Needed in core profile
-    if (glewInit() != GLEW_OK) {
-        fprintf(stderr, "Failed to initialize GLEW\n");
-        return -1;
-    }
-    // Ensure we can capture the escape key being pressed below
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    gm::GltnGraphicsContext ctx{1024, 768, "Tutorial 01", 45.0};
     GLuint programID = rm::LoadShaders( "source/shaders/vertexshader.glsl", "source/shaders/fragmentshader.glsl" );
-    // Enable depth test
-	glEnable(GL_DEPTH_TEST);
-	// Accept fragment if it closer to the camera than the former one
-	glDepthFunc(GL_LESS);
-    /* SETUP COMPLETE
-     */
-
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
-    
+        
     GLuint vertexbuffer;
 	gm::genBuffer3(&vertexbuffer, g_vertex_buffer_data.size()*6*3, g_vertex_buffer_data); // TODO: why *4?
 	GLuint uvbuffer;
@@ -150,13 +114,11 @@ int main(){
 
     gm::GltnFileObject monkey{"test_obj.obj"};
 
- 	glm::mat4 projection;
-	gm::setupGraphicsManager(window, projection, 45.0f);
 	GLfloat t = 0;
 	GLuint textureID = rm::loadBMP("textureExample.bmp");
 	GLuint textureID2 = rm::loadBMP("textureExample2.bmp");
 	
-	glfwSetScrollCallback(window, im::scrollCallback);
+	glfwSetScrollCallback(ctx.window, im::scrollCallback);
 
     do{
         // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
@@ -167,16 +129,17 @@ int main(){
 		// Or, for an ortho camera :
 		//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 		
-		im::computeMatricesFromInputs(window);
+		im::computeMatricesFromInputs(ctx.window);
 		
 		// Camera matrix
-		glm::mat4 view = im::getViewMatrix();
-		projection = im::getProjectionMatrix();
+		ctx.view = im::getViewMatrix();
+		ctx.projection = im::getProjectionMatrix();
         
 		
 		// Model matrix : an identity matrix (model will be at the origin)
 		glm::mat4 model = glm::mat4(1.0f);
 		gm::loadTexture(textureID);
+
 		// model = glm::rotate(model, glm::radians(t), glm::vec3(1, 1, 0)); 
 		// gm::drawTexturedArray(0, 3, 
 		// 	projection, view, model,
@@ -190,15 +153,15 @@ int main(){
             model = glm::mat4(1.0);
             model = glm::translate(model, glm::vec3(glm::sin(t) * 3, 0, 0));
         });
-        monkey.display(projection, view, programID);
+        monkey.display(ctx.projection, ctx.view, programID);
 
 		glDisableVertexAttribArray(0);
         
 		// Swap buffers
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(ctx.window);
         glfwPollEvents();
 		t+=0.0005;
     } // Check if the ESC key was pressed or the window was closed
-    while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-        glfwWindowShouldClose(window) == 0 );
+    while( glfwGetKey(ctx.window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
+        glfwWindowShouldClose(ctx.window) == 0 );
 }

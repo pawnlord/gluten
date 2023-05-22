@@ -15,6 +15,18 @@
 using namespace glm;
 
 namespace gm {
+
+    class GltnGraphicsContext {
+        public: 
+            GltnGraphicsContext(int width, int height, std::string name, float projectionAngle);
+            GLFWwindow* window; 
+            GLuint VertexArrayID;
+ 	        glm::mat4 projection;
+ 	        glm::mat4 view;
+            int width, height;
+    };
+
+
     GLuint setupGraphicsManager(GLFWwindow* window, glm::mat4& Projection, float projectionAngle);
     GLuint drawColoredArray(int attribLocation, int attribSize, 
                         glm::mat4 Projection,  glm::mat4 View, glm::mat4 Model,
@@ -45,5 +57,6 @@ namespace gm {
             void display(glm::mat4 projection, glm::mat4 view, GLuint shaderID);
             void updateModel(std::function<void(glm::mat4& model)> fp);
     };
+
 }
 #endif

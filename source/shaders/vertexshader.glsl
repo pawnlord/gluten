@@ -18,5 +18,5 @@ void main(){
 
     // UV of the vertex. No special space for this one.
     UV = vertexUV;
-    brightness = 1; //min(1, 1.0/(sqrt(vertexPosMS.x*vertexPosMS.x + vertexPosMS.y*vertexPosMS.y + vertexPosMS.z*vertexPosMS.z)));
+    brightness = min(1, 1.0/(sqrt(gl_Position.x*gl_Position.x + gl_Position.y*gl_Position.y + gl_Position.z*gl_Position.z)));
 }
