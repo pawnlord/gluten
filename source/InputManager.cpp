@@ -19,13 +19,13 @@ namespace im {
     glm::mat4 projectionMatrix;
     double lastTime = 0;
     // position
-    glm::vec3 position = glm::vec3( 0, 0, 5 );
+    glm::vec3 position = glm::vec3( 0, 0,0 );
     // horizontal angle : toward -Z
     float horizontalAngle = (2*3.14f)/2+(3.14f/3);
     // vertical angle : 0, look at the horizon
-    float verticalAngle = 0.0f;
+    float verticalAngle = 0;
     // Initial Field of View
-    float FoV = 45.0f;
+    float FoV = 60.0f;
     float speed = 3.0f; // 3 units / second
     float mouseSpeed = 1.0f;
     void computeMatricesFromInputs(GLFWwindow* window){

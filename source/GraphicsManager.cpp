@@ -1,5 +1,6 @@
 #define GLEW_STATIC
 #include <stdio.h>
+
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
 // Include GLM
@@ -9,6 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../include/GraphicsManager.h"
+#include "../include/ResourceManager.h"
 
 namespace gm {
     int width = 0, height = 0;
@@ -20,7 +22,6 @@ namespace gm {
     }
     GLuint drawColoredArray(int attribLocation, int attribSize, 
                         glm::mat4 Projection,  glm::mat4 View, glm::mat4 Model,
-                        GLfloat g_vertex_buffer_data[], GLfloat g_color_buffer_data[],
                         GLuint programID, GLuint vertexbuffer, GLuint colorbuffer,
                         int buffer_size){
         
@@ -79,6 +80,31 @@ namespace gm {
 		glDrawArrays(GL_TRIANGLES, 0, buffer_size); // Starting from vertex 0; 3 vertices total -> 1 triangle
         return 1;
     }
+
+    std::vector<GLfloat> unpack_vec3_vector(std::vector<vec3> v){
+        std::vector<GLfloat> arr;
+        for(int i = 0; i < v.size(); i++){
+            arr.push_back(v[i].x);
+            arr.push_back(v[i].y);
+            arr.push_back(v[i].z);
+        }
+        return arr;
+    }
+    std::vector<GLfloat> unpack_vec2_vector(std::vector<vec2> v){
+        std::vector<GLfloat> arr;
+        for(int i = 0; i < v.size(); i++){
+            arr.push_back(v[i].x);
+            arr.push_back(v[i].y);
+        }
+        return arr;
+    }
+    GLuint genBuffer2(GLuint* buffer, GLuint buffer_size, std::vector<vec2> v) {
+        return genBuffer(buffer, buffer_size, unpack_vec2_vector(v).data());
+    }
+    GLuint genBuffer3(GLuint* buffer, GLuint buffer_size, std::vector<vec3> v) {
+        return genBuffer(buffer, buffer_size, unpack_vec3_vector(v).data());
+    }
+    
     GLuint genBuffer(GLuint* buffer, GLuint buffer_size, GLfloat* buffer_data) {
         glGenBuffers(1, buffer);
         glBindBuffer(GL_ARRAY_BUFFER, *buffer);
@@ -90,4 +116,28 @@ namespace gm {
 
         return 1;
     }
+
+
+
+    void GltnFileObject::load(std::string path){
+        rm::loadOBJ(path.c_str(), vertices, uvs, normals);  
+        gm::genBuffer3(&vertexbuffer, vertices.size()*6*3, vertices); // TODO: why *4?
+        gm::genBuffer2(&uvbuffer, vertices.size()*6*3, uvs); // TODO: why *4?
+    }
+
+    void GltnFileObject::display(glm::mat4 projection, glm::mat4 view, GLuint shaderID) {
+        t += 0.01;
+        gm::drawTexturedArray(0, 3, 
+            projection, view, model,
+            shaderID,
+            vertexbuffer, 
+            uvbuffer,
+            12*3
+        );
+    }
+    
+    void GltnFileObject::updateModel(std::function<void(glm::mat4& model)> fp){
+        fp(model);
+    }
+    
 }

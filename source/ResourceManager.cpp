@@ -24,19 +24,19 @@ namespace rm{
     GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path){
 
         // Create the shaders
-        GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-        GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+        GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+        GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
         // Read the Vertex Shader code from the file
-        std::string VertexShaderCode;
-        std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
-        if(VertexShaderStream.is_open()){
+        std::string vertexShaderCode;
+        std::ifstream vertexShaderStream(vertex_file_path, std::ios::in);
+        if(vertexShaderStream.is_open()){
             std::stringstream sstr;
-            sstr << VertexShaderStream.rdbuf();
-            VertexShaderCode = sstr.str();
-            VertexShaderStream.close();
+            sstr << vertexShaderStream.rdbuf();
+            vertexShaderCode = sstr.str();
+            vertexShaderStream.close();
         }else{
-            printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_file_path);
+            printf("Impossible to open %s. Are you in the right directory?\n", vertex_file_path);
             getchar();
             return 0;
         }
@@ -56,57 +56,57 @@ namespace rm{
 
         // Compile Vertex Shader
         printf("Compiling shader : %s\n", vertex_file_path);
-        char const * VertexSourcePointer = VertexShaderCode.c_str();
-        glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
-        glCompileShader(VertexShaderID);
+        char const * VertexSourcePointer = vertexShaderCode.c_str();
+        glShaderSource(vertexShaderID, 1, &VertexSourcePointer , NULL);
+        glCompileShader(vertexShaderID);
 
         // Check Vertex Shader
-        glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-        glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &Result);
+        glGetShaderiv(vertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
         if ( InfoLogLength > 0 ){
             std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
-            glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
+            glGetShaderInfoLog(vertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
             printf("%s\n", &VertexShaderErrorMessage[0]);
         }
 
         // Compile Fragment Shader
         printf("Compiling shader : %s\n", fragment_file_path);
         char const * FragmentSourcePointer = FragmentShaderCode.c_str();
-        glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
-        glCompileShader(FragmentShaderID);
+        glShaderSource(fragmentShaderID, 1, &FragmentSourcePointer , NULL);
+        glCompileShader(fragmentShaderID);
 
         // Check Fragment Shader
-        glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-        glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &Result);
+        glGetShaderiv(fragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
         if ( InfoLogLength > 0 ){
             std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
-            glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+            glGetShaderInfoLog(fragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
             printf("%s\n", &FragmentShaderErrorMessage[0]);
         }
 
         // Link the program
         printf("Linking program\n");
-        GLuint ProgramID = glCreateProgram();
-        glAttachShader(ProgramID, VertexShaderID);
-        glAttachShader(ProgramID, FragmentShaderID);
-        glLinkProgram(ProgramID);
+        GLuint programID = glCreateProgram();
+        glAttachShader(programID, vertexShaderID);
+        glAttachShader(programID, fragmentShaderID);
+        glLinkProgram(programID);
 
         // Check the program
-        glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-        glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        glGetProgramiv(programID, GL_LINK_STATUS, &Result);
+        glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
         if ( InfoLogLength > 0 ){
             std::vector<char> ProgramErrorMessage(InfoLogLength+1);
-            glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+            glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
             printf("%s\n", &ProgramErrorMessage[0]);
         }
         
-        glDetachShader(ProgramID, VertexShaderID);
-        glDetachShader(ProgramID, FragmentShaderID);
+        glDetachShader(programID, vertexShaderID);
+        glDetachShader(programID, fragmentShaderID);
         
-        glDeleteShader(VertexShaderID);
-        glDeleteShader(FragmentShaderID);
+        glDeleteShader(vertexShaderID);
+        glDeleteShader(fragmentShaderID);
 
-        return ProgramID;
+        return programID;
     }
     GLuint loadBMP(const char* imagepath) {
         // Data read from the header of the BMP file
@@ -123,11 +123,11 @@ namespace rm{
         if (!file){printf("Image %s could not be opened\n"); return 0;}
  
         if ( fread(header, 1, 54, file)!=54 ){ // If not 54 bytes read : problem
-            printf("Not a correct BMP file\n");
+            printf("Not a correct BMP file: Header incorrect size\n");
             return false;
         }
         if ( header[0]!='B' || header[1]!='M' ){
-            printf("Not a correct BMP file\n");
+            printf("Not a correct BMP file: Magic Number does not match\n");
             return 0;
         }
         // Read ints from the byte array
@@ -180,8 +180,9 @@ namespace rm{
             printf("Impossible to open the file !\n");
             return false;
         }
+        int line = 0;
         while( 1 ){
-
+            line++;
             char lineHeader[128];
             // read the first word of the line
             int res = fscanf(file, "%s", lineHeader);
@@ -206,7 +207,7 @@ namespace rm{
                 unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
                 int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
                 if (matches != 9){
-                    printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+                    printf("(line %d); File can't be read by our simple parser. Try exporting with other options\n", line);
                     return false;
                 }
                 vertexIndices.push_back(vertexIndex[0]);

@@ -101,24 +101,6 @@ static std::vector<vec2> g_uv_buffer_data = {
     vec2(0.667979f, 1.0f-0.335851f)
 };
 
-std::vector<GLfloat> unpack_vec3_vector(std::vector<vec3> v){
-    std::vector<GLfloat> arr;
-    for(int i = 0; i < v.size(); i++){
-        arr.push_back(v[i].x);
-        arr.push_back(v[i].y);
-        arr.push_back(v[i].z);
-    }
-    return arr;
-}
-std::vector<GLfloat> unpack_vec2_vector(std::vector<vec2> v){
-    std::vector<GLfloat> arr;
-    for(int i = 0; i < v.size(); i++){
-        arr.push_back(v[i].x);
-        arr.push_back(v[i].y);
-    }
-    return arr;
-}
-
 
 int main(){
    // Initialise GLFW
@@ -160,17 +142,16 @@ int main(){
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
-    std::vector<vec3> normals_buffer_data;
-    rm::loadOBJ("test_obj.obj", g_vertex_buffer_data, g_uv_buffer_data, normals_buffer_data);
-
-    // This will identify our vertex buffer
+    
     GLuint vertexbuffer;
-	gm::genBuffer(&vertexbuffer, g_vertex_buffer_data.size()*6*3, unpack_vec3_vector(g_vertex_buffer_data).data()); // TODO: why *4?
+	gm::genBuffer3(&vertexbuffer, g_vertex_buffer_data.size()*6*3, g_vertex_buffer_data); // TODO: why *4?
 	GLuint uvbuffer;
-	gm::genBuffer(&uvbuffer, g_uv_buffer_data.size()*6*2, unpack_vec2_vector(g_uv_buffer_data).data());
-	
-	glm::mat4 Projection;
-	gm::setupGraphicsManager(window, Projection, 45.0f);
+	gm::genBuffer2(&uvbuffer, g_uv_buffer_data.size()*6*2, g_uv_buffer_data);
+
+    gm::GltnFileObject monkey{"test_obj.obj"};
+
+ 	glm::mat4 projection;
+	gm::setupGraphicsManager(window, projection, 45.0f);
 	GLfloat t = 0;
 	GLuint textureID = rm::loadBMP("textureExample.bmp");
 	GLuint textureID2 = rm::loadBMP("textureExample2.bmp");
@@ -189,38 +170,34 @@ int main(){
 		im::computeMatricesFromInputs(window);
 		
 		// Camera matrix
-		glm::mat4 View = im::getViewMatrix();
-		Projection = im::getProjectionMatrix();
+		glm::mat4 view = im::getViewMatrix();
+		projection = im::getProjectionMatrix();
+        
 		
 		// Model matrix : an identity matrix (model will be at the origin)
-		glm::mat4 Model = glm::mat4(1.0f);
+		glm::mat4 model = glm::mat4(1.0f);
 		gm::loadTexture(textureID);
-		Model = glm::rotate(Model, glm::radians(t), glm::vec3(1, 1, 0)); 
-		gm::drawTexturedArray(0, 3, 
-			Projection, View, Model,
-			programID,
-			vertexbuffer, 
-			uvbuffer,
-			12*3
-		);
+		// model = glm::rotate(model, glm::radians(t), glm::vec3(1, 1, 0)); 
+		// gm::drawTexturedArray(0, 3, 
+		// 	projection, view, model,
+		// 	programID,
+		// 	vertexbuffer, 
+		// 	uvbuffer,
+		// 	12*3
+		// );
 
-		gm::loadTexture(textureID2);
-		Model = glm::rotate(Model, glm::radians(-t), glm::vec3(1, 1, 0)); 
-	
-		gm::drawTexturedArray(0, 3, 
-			Projection, View, Model,
-			programID,
-			vertexbuffer, 
-			uvbuffer,
-			12*3
-		);
+        monkey.updateModel([=](auto& model){
+            model = glm::mat4(1.0);
+            model = glm::translate(model, glm::vec3(glm::sin(t) * 3, 0, 0));
+        });
+        monkey.display(projection, view, programID);
 
 		glDisableVertexAttribArray(0);
         
 		// Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
-		t+=0.1;
+		t+=0.0005;
     } // Check if the ESC key was pressed or the window was closed
     while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0 );
