@@ -24,17 +24,18 @@ namespace gm {
  	        glm::mat4 projection;
  	        glm::mat4 view;
             int width, height;
+            float brightnessScalar = 1.0;
     };
 
 
     GLuint setupGraphicsManager(GLFWwindow* window, glm::mat4& Projection, float projectionAngle);
     GLuint drawColoredArray(int attribLocation, int attribSize, 
-                        glm::mat4 Projection,  glm::mat4 View, glm::mat4 Model,
+                        GltnGraphicsContext, glm::mat4 Model,
                         GLuint programID, GLuint vertexbuffer, GLuint colorbuffer,
                         int buffer_size
                     );
     GLuint drawTexturedArray(int attribLocation, int attribSize, 
-                        glm::mat4 Projection,  glm::mat4 View, glm::mat4 Model,
+                        GltnGraphicsContext, glm::mat4 Model,
                         GLuint programID, GLuint vertexbuffer, GLuint colorbuffer,
                         int buffer_size
                     );
@@ -50,12 +51,14 @@ namespace gm {
             std::vector<vec2> uvs;
             GLuint vertexbuffer;
 	        GLuint uvbuffer;
+            GLuint textureID = 0;
             int t = 0;
 		    glm::mat4 model = glm::mat4(1.0f);
             GltnFileObject(std::string path) {load(path);}
             void load(std::string path);
-            void display(glm::mat4 projection, glm::mat4 view, GLuint shaderID);
+            void display(GltnGraphicsContext, GLuint shaderID);
             void updateModel(std::function<void(glm::mat4& model)> fp);
+            void usingTexture(std::string);
     };
 
 }

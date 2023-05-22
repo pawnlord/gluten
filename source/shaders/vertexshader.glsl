@@ -10,6 +10,7 @@ out float brightness;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
+uniform float bs;
 
 void main(){
 
@@ -18,5 +19,5 @@ void main(){
 
     // UV of the vertex. No special space for this one.
     UV = vertexUV;
-    brightness = min(1, 1.0/(sqrt(gl_Position.x*gl_Position.x + gl_Position.y*gl_Position.y + gl_Position.z*gl_Position.z)));
+    brightness = min(1, (bs)/(sqrt(gl_Position.x*gl_Position.x + gl_Position.y*gl_Position.y + gl_Position.z*gl_Position.z)));
 }

@@ -12,5 +12,6 @@ namespace im {
     void computeMatricesFromInputs(GLFWwindow* window);
     glm::mat4 getViewMatrix();
     glm::mat4 getProjectionMatrix();
+    void setBrightnessScalar(float *_brightnessScalar);
     void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 }

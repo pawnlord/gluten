@@ -15,7 +15,6 @@
 
 namespace gm {
     int width = 0, height = 0;
-    
     GltnGraphicsContext::GltnGraphicsContext(int width, int height, std::string name, float projectionAngle){
         // Initialise GLFW
         if( !glfwInit() )
@@ -60,6 +59,7 @@ namespace gm {
 		projection = glm::perspective(glm::radians(projectionAngle), (float) width / (float)height, 0.1f, 100.0f);
         
         glfwSetCursorPos(window, width/2, height/2);
+        
     }
     
     GLuint setupGraphicsManager(GLFWwindow* window, glm::mat4& Projection, float projectionAngle){
@@ -70,17 +70,22 @@ namespace gm {
     }
 
     GLuint drawColoredArray(int attribLocation, int attribSize, 
-                        glm::mat4 Projection,  glm::mat4 View, glm::mat4 Model,
+                        GltnGraphicsContext ctx, glm::mat4 Model,
                         GLuint programID, GLuint vertexbuffer, GLuint colorbuffer,
                         int buffer_size){
         
-        glm::mat4 mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
-		
+        glm::mat4 mvp = ctx.projection * ctx.view * Model; // Remember, matrix multiplication is the other way around
+
+        		
 		// Get a handle for our "MVP" uniform
 		GLuint matrixID = glGetUniformLocation(programID, "MVP");
 		
 		// Send our transformation to the currently bound shader, in the "MVP" uniform
 		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
+
+		GLuint brightnessID = glGetUniformLocation(programID, "brightness_scalar");
+		
+		glUniform1f(brightnessID, ctx.brightnessScalar);		
         
 		// 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);
@@ -100,17 +105,22 @@ namespace gm {
         return 1;
     }
     GLuint drawTexturedArray(int attribLocation, int attribSize, 
-                        glm::mat4 Projection,  glm::mat4 View, glm::mat4 Model,
+                        GltnGraphicsContext ctx, glm::mat4 Model,
                         GLuint programID, GLuint vertexbuffer, GLuint uvbuffer,
                         int buffer_size){
         
-        glm::mat4 mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
-		
+        glm::mat4 mvp = ctx.projection * ctx.view * Model; // Remember, matrix multiplication is the other way around
+
+
 		// Get a handle for our "MVP" uniform
 		GLuint matrixID = glGetUniformLocation(programID, "MVP");
 		
 		// Send our transformation to the currently bound shader, in the "MVP" uniform
 		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
+
+		GLuint brightnessID = glGetUniformLocation(programID, "bs");
+		
+		glUniform1f(brightnessID, ctx.brightnessScalar);		
 		
 		// 1st attribute buffer : vertices
         glEnableVertexAttribArray(0);
@@ -174,10 +184,13 @@ namespace gm {
         gm::genBuffer2(&uvbuffer, vertices.size()*6*3, uvs); // TODO: why *4?
     }
 
-    void GltnFileObject::display(glm::mat4 projection, glm::mat4 view, GLuint shaderID) {
+    void GltnFileObject::display(GltnGraphicsContext ctx, GLuint shaderID) {
         t += 0.01;
+        if(textureID != 0){
+    		loadTexture(textureID);
+        }
         gm::drawTexturedArray(0, 3, 
-            projection, view, model,
+            ctx, model,
             shaderID,
             vertexbuffer, 
             uvbuffer,
@@ -187,6 +200,9 @@ namespace gm {
     
     void GltnFileObject::updateModel(std::function<void(glm::mat4& model)> fp){
         fp(model);
+    }
+    void GltnFileObject::usingTexture(std::string path){
+    	textureID = rm::loadBMP(path.c_str());
     }
     
 }

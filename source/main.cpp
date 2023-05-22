@@ -113,11 +113,12 @@ int main(){
 	gm::genBuffer2(&uvbuffer, g_uv_buffer_data.size()*6*2, g_uv_buffer_data);
 
     gm::GltnFileObject monkey{"test_obj.obj"};
-
+    monkey.usingTexture("textureExample2.bmp");
 	GLfloat t = 0;
 	GLuint textureID = rm::loadBMP("textureExample.bmp");
 	GLuint textureID2 = rm::loadBMP("textureExample2.bmp");
 	
+    im::setBrightnessScalar(&ctx.brightnessScalar);
 	glfwSetScrollCallback(ctx.window, im::scrollCallback);
 
     do{
@@ -142,7 +143,7 @@ int main(){
 
 		// model = glm::rotate(model, glm::radians(t), glm::vec3(1, 1, 0)); 
 		// gm::drawTexturedArray(0, 3, 
-		// 	projection, view, model,
+		// 	ctx, model,
 		// 	programID,
 		// 	vertexbuffer, 
 		// 	uvbuffer,
@@ -153,7 +154,7 @@ int main(){
             model = glm::mat4(1.0);
             model = glm::translate(model, glm::vec3(glm::sin(t) * 3, 0, 0));
         });
-        monkey.display(ctx.projection, ctx.view, programID);
+        monkey.display(ctx, programID);
 
 		glDisableVertexAttribArray(0);
         

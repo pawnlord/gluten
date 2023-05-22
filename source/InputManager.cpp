@@ -28,6 +28,7 @@ namespace im {
     float FoV = 60.0f;
     float speed = 3.0f; // 3 units / second
     float mouseSpeed = 1.0f;
+    float *brightnessScalar = nullptr;
     void computeMatricesFromInputs(GLFWwindow* window){
         double currentTime = glfwGetTime();
         float deltaTime = float(currentTime - lastTime);
@@ -93,9 +94,15 @@ namespace im {
     glm::mat4 getProjectionMatrix(){
         return projectionMatrix;
     }
+    void setBrightnessScalar(float *_brightnessScalar){
+        brightnessScalar = _brightnessScalar;
+    }
     void scrollCallback(GLFWwindow* window, double xoffset, double yoffset){
-        FoV += yoffset;
-        printf("callback called, %f %f %f\n", FoV, xoffset, yoffset);
+        // FoV += yoffset;
+        // printf("callback called, %f %f %f\n", FoV, xoffset, yoffset);
+        if(brightnessScalar != nullptr){
+            (*brightnessScalar) += yoffset;
+        }
     }
 }
 #endif
