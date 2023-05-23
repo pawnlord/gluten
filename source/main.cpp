@@ -138,7 +138,7 @@ int main(){
     monkey.internals.addBrightnessScalar("bs")
     ->addMVP("MVP")
     ->addVertexBuffer(0)
-    ->addInShaderVariable(1, 2, monkey.colorbuffer);
+    ->addInShaderVariable(1, 3, monkey.colorbuffer);
 
 
 	GLfloat t = 0;
@@ -149,22 +149,13 @@ int main(){
 	glfwSetScrollCallback(ctx.window, im::scrollCallback);
 
     do{
-        // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		// Get width and height
-		
-		// Or, for an ortho camera :
-		//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 		
 		im::computeMatricesFromInputs(ctx.window);
 		
-		// Camera matrix
 		ctx.view = im::getViewMatrix();
 		ctx.projection = im::getProjectionMatrix();
-        
-		
-		// Model matrix : an identity matrix (model will be at the origin)
+        		
 		glm::mat4 model = glm::mat4(1.0f);
 		gm::loadTexture(textureID);
 
@@ -182,7 +173,6 @@ int main(){
 
 		glDisableVertexAttribArray(0);
         
-		// Swap buffers
         glfwSwapBuffers(ctx.window);
         glfwPollEvents();
 		t+=0.0005;

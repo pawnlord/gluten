@@ -14,85 +14,6 @@
 #include "../include/ResourceManager.h"
 
 namespace gm {
-    int width = 0, height = 0;
-    
-    GLuint setupGraphicsManager(GLFWwindow* window, glm::mat4& Projection, float projectionAngle){
-		glfwGetWindowSize(window, &width, &height);
-        // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-		Projection = glm::perspective(glm::radians(projectionAngle), (float) width / (float)height, 0.1f, 100.0f);
-        return 1;
-    }
-
-    GLuint drawColoredArray(int attribLocation, int attribSize, 
-                        GltnGraphicsContext ctx, glm::mat4 Model,
-                        GLuint programID, GLuint vertexbuffer, GLuint colorbuffer,
-                        int buffer_size){
-        
-        glm::mat4 mvp = ctx.projection * ctx.view * Model; // Remember, matrix multiplication is the other way around
-
-        		
-		// Get a handle for our "MVP" uniform
-		GLuint matrixID = glGetUniformLocation(programID, "MVP");
-		
-		// Send our transformation to the currently bound shader, in the "MVP" uniform
-		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
-
-		GLuint brightnessID = glGetUniformLocation(programID, "brightness_scalar");
-		
-		glUniform1f(brightnessID, ctx.brightnessScalar);		
-        
-		// 1st attribute buffer : vertices
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        
-		glVertexAttribPointer(attribLocation, attribSize, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		
-		// 2nd attribute buffer : colors
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-		
-		glVertexAttribPointer(attribLocation+1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		
-		glUseProgram(programID);
-        
-		glDrawArrays(GL_TRIANGLES, 0, buffer_size); // Starting from vertex 0; 3 vertices total -> 1 triangle
-        return 1;
-    }
-    GLuint drawTexturedArray(int attribLocation, int attribSize, 
-                        GltnGraphicsContext ctx, glm::mat4 Model,
-                        GLuint programID, GLuint vertexbuffer, GLuint uvbuffer,
-                        int buffer_size){
-        
-        glm::mat4 mvp = ctx.projection * ctx.view * Model; // Remember, matrix multiplication is the other way around
-
-
-		// Get a handle for our "MVP" uniform
-		GLuint matrixID = glGetUniformLocation(programID, "MVP");
-		
-		// Send our transformation to the currently bound shader, in the "MVP" uniform
-		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
-
-		GLuint brightnessID = glGetUniformLocation(programID, "bs");
-		
-		glUniform1f(brightnessID, ctx.brightnessScalar);		
-		
-		// 1st attribute buffer : vertices
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        
-		glVertexAttribPointer(attribLocation, attribSize, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		
-		// 2nd attribute buffer : colors
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-		
-		glVertexAttribPointer(attribLocation+1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		
-		glUseProgram(programID);
-        
-		glDrawArrays(GL_TRIANGLES, 0, buffer_size); // Starting from vertex 0; 3 vertices total -> 1 triangle
-        return 1;
-    }
 
     std::vector<GLfloat> unpack_vec3_vector(std::vector<vec3> v){
         std::vector<GLfloat> arr;
@@ -170,7 +91,7 @@ namespace gm {
         rm::loadObjWithoutUV(path.c_str(), internals.vertices, internals.normals);  
         gm::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices); // TODO: why *4?
         for(auto v : internals.vertices){
-            colors.push_back(glm::vec3(1.0, 0, 1.0));
+            colors.push_back(glm::vec3(1.0, 1.0, 1.0));
         }
         gm::genBuffer3(&colorbuffer, colors.size()*6*3, colors); // TODO: why *4?
     }
