@@ -114,18 +114,18 @@ int main(){
 	gm::genBuffer2(&uvbuffer, g_uv_buffer_data.size()*6*2, g_uv_buffer_data);
 
     shader::GltnShaderPipeline pipeline{
-        "source/shaders/vertexshader.glsl", 
-        "source/shaders/fragmentshader.glsl", 
+        "source/shaders/uvvertexshader.glsl", 
+        "source/shaders/uvfragmentshader.glsl", 
         0, 
         12};
 
 
     gm::GltnUVObject monkey{"test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&pipeline)};
     
-    pipeline.addUniformVariable(shader::Mat4, "MVP", &monkey.mvp)
-    ->addUniformVariable(shader::Float1, "bs", &monkey.brightnessScalar)
-    ->addInShaderVariable(0, 3, vertexbuffer)
-    ->addInShaderVariable(1, 2, uvbuffer);
+    monkey.internals.addBrightnessScalar("bs")
+    ->addMVP("MVP")
+    ->addVertexBuffer(0)
+    ->addInShaderVariable(1, 2, monkey.uvbuffer);
 
 
     monkey.usingTexture("textureExample2.bmp");
@@ -133,7 +133,7 @@ int main(){
 	GLuint textureID = rm::loadBMP("textureExample.bmp");
 	GLuint textureID2 = rm::loadBMP("textureExample2.bmp");
 	
-    im::setBrightnessScalar(&monkey.brightnessScalar);
+    im::setBrightnessScalar(&monkey.internals.brightnessScalar);
 	glfwSetScrollCallback(ctx.window, im::scrollCallback);
 
     do{
@@ -155,15 +155,6 @@ int main(){
 		// Model matrix : an identity matrix (model will be at the origin)
 		glm::mat4 model = glm::mat4(1.0f);
 		gm::loadTexture(textureID);
-
-		// model = glm::rotate(model, glm::radians(t), glm::vec3(1, 1, 0)); 
-		// gm::drawTexturedArray(0, 3, 
-		// 	ctx, model,
-		// 	programID,
-		// 	vertexbuffer, 
-		// 	uvbuffer,
-		// 	12*3
-		// );
 
         monkey.updateModel([=](auto& model){
             model = glm::mat4(1.0);

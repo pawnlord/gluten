@@ -17,4 +17,8 @@ namespace rm{
         std::vector < glm::vec2 > & out_uvs,
         std::vector < glm::vec3 > & out_normals
     );
+    bool loadObjWithoutUV(const char * path,
+        std::vector < glm::vec3 > & out_vertices,
+        std::vector < glm::vec3 > & out_normals
+    );
 }

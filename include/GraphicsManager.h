@@ -34,37 +34,61 @@ namespace gm {
     GLuint genBuffer(GLuint* buffer, GLuint buffer_size, GLfloat* buffer_data);
     GLuint loadTexture(GLuint textureID);
 
-    class GltnFileObject {
+    class GltnObject {
         virtual void load(std::string path) = 0;
         virtual void display(GltnGraphicsContext) = 0;
-            
     };
 
-    class GltnUVObject : public GltnFileObject {
+    // Object representing internal data, unrelated to loading and drawing
+    // This may be updated as we go
+    struct GltnInternal {
+        std::shared_ptr<shader::GltnShaderPipeline> pipeline;
+        glm::mat4 mvp;
+        std::vector<vec3> normals;
+        std::vector<vec3> vertices;
+        GLuint vertexbuffer;
+        float brightnessScalar = 1.0;
+        glm::mat4 model = glm::mat4(1.0f);
+        GltnInternal(std::shared_ptr<shader::GltnShaderPipeline> pipeline): pipeline{pipeline} {} 
+        void updateModel(std::function<void(glm::mat4& model)> fp);
+        void display(GltnGraphicsContext ctx);
+        GltnInternal *addBrightnessScalar(std::string name);
+        GltnInternal *addMVP(std::string name);
+        GltnInternal *addVertexBuffer(int attribNum);
+        GltnInternal *addUniformVariable(shader::ShaderInputType type, std::string name, void *data);
+        GltnInternal *addInShaderVariable(int attribNum, int attribSize, GLuint& buffer);
+    };
+
+    class GltnUVObject : public GltnObject {
         public:
-            std::vector<vec3> normals;
-            std::vector<vec3> vertices;
             std::vector<vec2> uvs;
-            glm::mat4 mvp;
 
-            std::shared_ptr<shader::GltnShaderPipeline> pipeline;
-            float brightnessScalar;
-
-            GLuint vertexbuffer;
+            GltnInternal internals;
 	        GLuint uvbuffer;
             GLuint textureID = 0;
 
-            int t = 0;
-		    glm::mat4 model = glm::mat4(1.0f);
             GltnUVObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) 
-                : pipeline{pipeline}, brightnessScalar{1.0f} {
+                : internals{pipeline}{
                 load(path);
             }
             void load(std::string path) override;
             void display(GltnGraphicsContext) override;
-            void updateModel(std::function<void(glm::mat4& model)> fp);
             void usingTexture(std::string);
-    };
+            void updateModel(std::function<void(glm::mat4& model)> fp);
 
+    };
+    class GltnNonUVObject : public GltnObject {
+        public:
+            std::vector<vec3> colors;
+	        GLuint colorbuffer;
+            GltnInternal internals;
+            void load(std::string path) override;
+            void display(GltnGraphicsContext) override;
+            
+            void updateModel(std::function<void(glm::mat4& model)> fp){
+                internals.updateModel(fp);
+            }
+            
+    };
 }
 #endif
