@@ -38,16 +38,23 @@ namespace gm {
         public:
             std::vector<vec3> normals;
             std::vector<vec3> vertices;
-            std::shared_ptr<shader::GltnShaderPipeline> pipeline;
             std::vector<vec2> uvs;
             glm::mat4 mvp;
-            float brightnessScalar = 1.0;
+
+            std::shared_ptr<shader::GltnShaderPipeline> pipeline;
+            float brightnessScalar;
+
             GLuint vertexbuffer;
 	        GLuint uvbuffer;
             GLuint textureID = 0;
+
             int t = 0;
 		    glm::mat4 model = glm::mat4(1.0f);
-            GltnFileObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) : pipeline{pipeline} {load(path);}
+            GltnFileObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) 
+                : pipeline{pipeline}, brightnessScalar{1.0f} {
+                printf("%f\n", brightnessScalar);
+                load(path);
+            }
             void load(std::string path);
             void display(GltnGraphicsContext, GLuint shaderID);
             void updateModel(std::function<void(glm::mat4& model)> fp);

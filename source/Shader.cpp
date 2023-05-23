@@ -10,6 +10,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 // Include GLFW
 #include <GLFW/glfw3.h>
+#include <stdexcept>
+#include <sstream>
 
 using namespace shader;
 
@@ -26,6 +28,13 @@ GltnShaderPipeline *GltnShaderPipeline::addInShaderVariable(int attribNum, int a
 void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, GLuint programID){
     for(auto& uniform : this->uniforms){
         GLuint id = glGetUniformLocation(programID, uniform.name.c_str());
+        // stupid bit-hack
+        if(id == ~0){
+            std::stringstream message;
+            message << "Inavlid Uniform variable in shader " << programID << ": Was unable to find uniform " << uniform.name; 
+            printf("%s\n", message.str().c_str());
+            throw std::invalid_argument(message.str());
+        }
 	    switch(uniform.type){
             case Mat4:
             glUniformMatrix4fv(id, 1, GL_FALSE, (GLfloat*)uniform.data);

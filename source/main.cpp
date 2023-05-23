@@ -120,10 +120,9 @@ int main(){
     gm::GltnFileObject monkey{"test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&pipeline)};
     
     pipeline.addUniformVariable(shader::Mat4, "MVP", &monkey.mvp)
-    ->addUniformVariable(shader::Float1, "brightness_scalar", &monkey.brightnessScalar)
+    ->addUniformVariable(shader::Float1, "bs", &monkey.brightnessScalar)
     ->addInShaderVariable(0, 3, vertexbuffer)
-    ->addInShaderVariable(1, 2, uvbuffer);   
-    shader::GltnShaderPipeline monkeyPipeline{0, 12};
+    ->addInShaderVariable(1, 2, uvbuffer);
 
 
     monkey.usingTexture("textureExample2.bmp");
@@ -131,7 +130,7 @@ int main(){
 	GLuint textureID = rm::loadBMP("textureExample.bmp");
 	GLuint textureID2 = rm::loadBMP("textureExample2.bmp");
 	
-    im::setBrightnessScalar(&ctx.brightnessScalar);
+    im::setBrightnessScalar(&monkey.brightnessScalar);
 	glfwSetScrollCallback(ctx.window, im::scrollCallback);
 
     do{
