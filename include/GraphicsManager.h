@@ -12,21 +12,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 // Include GLFW
 #include <GLFW/glfw3.h>
+#include "Shader.h"
+#include "../include/GraphicsContext.h"
 using namespace glm;
 
 namespace gm {
-
-    class GltnGraphicsContext {
-        public: 
-            GltnGraphicsContext(int width, int height, std::string name, float projectionAngle);
-            GLFWwindow* window; 
-            GLuint VertexArrayID;
- 	        glm::mat4 projection;
- 	        glm::mat4 view;
-            int width, height;
-            float brightnessScalar = 1.0;
-    };
-
 
     GLuint setupGraphicsManager(GLFWwindow* window, glm::mat4& Projection, float projectionAngle);
     GLuint drawColoredArray(int attribLocation, int attribSize, 
@@ -48,13 +38,16 @@ namespace gm {
         public:
             std::vector<vec3> normals;
             std::vector<vec3> vertices;
+            std::shared_ptr<shader::GltnShaderPipeline> pipeline;
             std::vector<vec2> uvs;
+            glm::mat4 mvp;
+            float brightnessScalar = 1.0;
             GLuint vertexbuffer;
 	        GLuint uvbuffer;
             GLuint textureID = 0;
             int t = 0;
 		    glm::mat4 model = glm::mat4(1.0f);
-            GltnFileObject(std::string path) {load(path);}
+            GltnFileObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) : pipeline{pipeline} {load(path);}
             void load(std::string path);
             void display(GltnGraphicsContext, GLuint shaderID);
             void updateModel(std::function<void(glm::mat4& model)> fp);

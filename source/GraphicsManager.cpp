@@ -182,6 +182,7 @@ namespace gm {
         rm::loadOBJ(path.c_str(), vertices, uvs, normals);  
         gm::genBuffer3(&vertexbuffer, vertices.size()*6*3, vertices); // TODO: why *4?
         gm::genBuffer2(&uvbuffer, vertices.size()*6*3, uvs); // TODO: why *4?
+
     }
 
     void GltnFileObject::display(GltnGraphicsContext ctx, GLuint shaderID) {
@@ -189,13 +190,7 @@ namespace gm {
         if(textureID != 0){
     		loadTexture(textureID);
         }
-        gm::drawTexturedArray(0, 3, 
-            ctx, model,
-            shaderID,
-            vertexbuffer, 
-            uvbuffer,
-            12*3
-        );
+        pipeline.draw(ctx, model, shaderID);
     }
     
     void GltnFileObject::updateModel(std::function<void(glm::mat4& model)> fp){

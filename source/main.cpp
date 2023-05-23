@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <memory>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -20,6 +21,7 @@ using namespace glm;
 #include "../include/ResourceManager.h"
 #include "../include/GraphicsManager.h"
 #include "../include/InputManager.h"
+#include "../include/Shader.h"
 
 
 static  std::vector<vec3> g_vertex_buffer_data = {
@@ -112,7 +114,18 @@ int main(){
 	GLuint uvbuffer;
 	gm::genBuffer2(&uvbuffer, g_uv_buffer_data.size()*6*2, g_uv_buffer_data);
 
-    gm::GltnFileObject monkey{"test_obj.obj"};
+    shader::GltnShaderPipeline pipeline{0, 12};
+
+
+    gm::GltnFileObject monkey{"test_obj.obj", std::make_shared(pipeline)};
+    
+    pipeline.addUniformVariable(shader::Mat4, "MVP", &monkey.mvp)
+    ->addUniformVariable(shader::Float1, "brightness_scalar", &monkey.brightnessScalar)
+    ->addInShaderVariable(0, 3, vertexbuffer)
+    ->addInShaderVariable(1, 2, uvbuffer);   
+    shader::GltnShaderPipeline monkeyPipeline{0, 12};
+
+
     monkey.usingTexture("textureExample2.bmp");
 	GLfloat t = 0;
 	GLuint textureID = rm::loadBMP("textureExample.bmp");
