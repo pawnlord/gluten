@@ -25,14 +25,13 @@ GltnShaderPipeline *GltnShaderPipeline::addInShaderVariable(int attribNum, int a
     return this;
 }
 
-void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, GLuint programID){
+void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, glm::mat4 Model){
     for(auto& uniform : this->uniforms){
-        GLuint id = glGetUniformLocation(programID, uniform.name.c_str());
+        GLuint id = glGetUniformLocation(shaderID, uniform.name.c_str());
         // stupid bit-hack
         if(id == ~0){
             std::stringstream message;
-            message << "Inavlid Uniform variable in shader " << programID << ": Was unable to find uniform " << uniform.name; 
-            printf("%s\n", message.str().c_str());
+            message << "Inavlid Uniform variable in shader " << shaderID << ": Was unable to find uniform " << uniform.name; 
             throw std::invalid_argument(message.str());
         }
 	    switch(uniform.type){
@@ -56,7 +55,7 @@ void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, GLui
                 0, (void*)0);
 		
     }
-    glUseProgram(programID);
+    glUseProgram(shaderID);
     glDrawArrays(GL_TRIANGLES, 0, verticesNum*3); 
     // glm::mat4 mvp = ctx.projection * ctx.view * Model; // Remember, matrix multiplication is the other way around
 

@@ -12,7 +12,7 @@
 namespace rm{
     GLuint LoadShaders(const char* vertex_file_path, const char* fragment_file_path);
     GLuint loadBMP(const char* imagepath);
-    bool loadOBJ(const char * path,
+    bool loadObjWithUV(const char * path,
         std::vector < glm::vec3 > & out_vertices,
         std::vector < glm::vec2 > & out_uvs,
         std::vector < glm::vec3 > & out_normals

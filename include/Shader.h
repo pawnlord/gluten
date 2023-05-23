@@ -15,6 +15,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../include/GraphicsContext.h"
+#include "../include/ResourceManager.h"
 
 namespace shader{
 
@@ -44,11 +45,16 @@ class GltnShaderPipeline{
     int verticesNum;
     std::vector<UniformShaderInput> uniforms; // Inputs uniform accross shader "instances?"
     std::vector<VertexShaderInput> vertexInputs;  // Inputs with buffers for vertex shaders
-    GltnShaderPipeline(int attribLocation, int verticesNum) : attribLocation{attribLocation}, verticesNum{verticesNum} {}
+    GLuint shaderID;
+    GltnShaderPipeline(std::string vertexShader, std::string fragmentShader, int attribLocation, int verticesNum) 
+        : attribLocation{attribLocation}, verticesNum{verticesNum} {
+        // TODO: Cache Shaders
+        shaderID = rm::LoadShaders(vertexShader.c_str(), fragmentShader.c_str());
+    }
 
     GltnShaderPipeline *addUniformVariable(ShaderInputType type, std::string name, void *data);
     GltnShaderPipeline *addInShaderVariable(int attribNum, int attribSize, GLuint& buffer);
-    void draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, GLuint programID);
+    void draw(gm::GltnGraphicsContext ctx, glm::mat4 Model);
 
 };
 

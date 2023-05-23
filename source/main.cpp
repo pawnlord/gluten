@@ -107,17 +107,20 @@ static std::vector<vec2> g_uv_buffer_data = {
 int main(){
 
     gm::GltnGraphicsContext ctx{1024, 768, "Tutorial 01", 45.0};
-    GLuint programID = rm::LoadShaders( "source/shaders/vertexshader.glsl", "source/shaders/fragmentshader.glsl" );
         
     GLuint vertexbuffer;
 	gm::genBuffer3(&vertexbuffer, g_vertex_buffer_data.size()*6*3, g_vertex_buffer_data); // TODO: why *4?
 	GLuint uvbuffer;
 	gm::genBuffer2(&uvbuffer, g_uv_buffer_data.size()*6*2, g_uv_buffer_data);
 
-    shader::GltnShaderPipeline pipeline{0, 12};
+    shader::GltnShaderPipeline pipeline{
+        "source/shaders/vertexshader.glsl", 
+        "source/shaders/fragmentshader.glsl", 
+        0, 
+        12};
 
 
-    gm::GltnFileObject monkey{"test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&pipeline)};
+    gm::GltnUVObject monkey{"test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&pipeline)};
     
     pipeline.addUniformVariable(shader::Mat4, "MVP", &monkey.mvp)
     ->addUniformVariable(shader::Float1, "bs", &monkey.brightnessScalar)
@@ -166,7 +169,7 @@ int main(){
             model = glm::mat4(1.0);
             model = glm::translate(model, glm::vec3(glm::sin(t) * 3, 0, 0));
         });
-        monkey.display(ctx, programID);
+        monkey.display(ctx);
 
 		glDisableVertexAttribArray(0);
         

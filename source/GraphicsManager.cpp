@@ -132,26 +132,26 @@ namespace gm {
 
 
 
-    void GltnFileObject::load(std::string path){
-        rm::loadOBJ(path.c_str(), vertices, uvs, normals);  
+    void GltnUVObject::load(std::string path){
+        rm::loadObjWithUV(path.c_str(), vertices, uvs, normals);  
         gm::genBuffer3(&vertexbuffer, vertices.size()*6*3, vertices); // TODO: why *4?
         gm::genBuffer2(&uvbuffer, vertices.size()*6*3, uvs); // TODO: why *4?
 
     }
 
-    void GltnFileObject::display(GltnGraphicsContext ctx, GLuint shaderID) {
+    void GltnUVObject::display(GltnGraphicsContext ctx) {
         t += 0.01;
         if(textureID != 0){
     		loadTexture(textureID);
         }
         mvp = ctx.projection * ctx.view * model; // Remember, matrix multiplication is the other way around
-        pipeline->draw(ctx, model, shaderID);
+        pipeline->draw(ctx, model);
     }
     
-    void GltnFileObject::updateModel(std::function<void(glm::mat4& model)> fp){
+    void GltnUVObject::updateModel(std::function<void(glm::mat4& model)> fp){
         fp(model);
     }
-    void GltnFileObject::usingTexture(std::string path){
+    void GltnUVObject::usingTexture(std::string path){
     	textureID = rm::loadBMP(path.c_str());
     }
     

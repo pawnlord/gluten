@@ -35,6 +35,12 @@ namespace gm {
     GLuint loadTexture(GLuint textureID);
 
     class GltnFileObject {
+        virtual void load(std::string path) = 0;
+        virtual void display(GltnGraphicsContext) = 0;
+            
+    };
+
+    class GltnUVObject : public GltnFileObject {
         public:
             std::vector<vec3> normals;
             std::vector<vec3> vertices;
@@ -50,13 +56,12 @@ namespace gm {
 
             int t = 0;
 		    glm::mat4 model = glm::mat4(1.0f);
-            GltnFileObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) 
+            GltnUVObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) 
                 : pipeline{pipeline}, brightnessScalar{1.0f} {
-                printf("%f\n", brightnessScalar);
                 load(path);
             }
-            void load(std::string path);
-            void display(GltnGraphicsContext, GLuint shaderID);
+            void load(std::string path) override;
+            void display(GltnGraphicsContext) override;
             void updateModel(std::function<void(glm::mat4& model)> fp);
             void usingTexture(std::string);
     };
