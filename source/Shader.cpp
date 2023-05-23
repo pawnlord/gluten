@@ -25,7 +25,7 @@ GltnShaderPipeline *GltnShaderPipeline::addInShaderVariable(int attribNum, int a
     return this;
 }
 
-void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, glm::mat4 Model){
+void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, int verticesNum){
     for(auto& uniform : this->uniforms){
         GLuint id = glGetUniformLocation(shaderID, uniform.name.c_str());
         // stupid bit-hack

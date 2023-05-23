@@ -89,6 +89,11 @@ namespace gm {
                 internals.updateModel(fp);
             }
             
+            GltnNonUVObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) 
+                : internals{pipeline}{
+                load(path);
+            }
+            
     };
 }
 #endif

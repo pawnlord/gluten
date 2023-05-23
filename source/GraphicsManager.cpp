@@ -136,7 +136,7 @@ namespace gm {
 
     void GltnInternal::display(GltnGraphicsContext ctx) {
         mvp = ctx.projection * ctx.view * model; // Remember, matrix multiplication is the other way around
-        pipeline->draw(ctx, model);
+        pipeline->draw(ctx, model, vertices.size());
     };
     GltnInternal *GltnInternal::addBrightnessScalar(std::string name){
         pipeline->addUniformVariable(shader::Float1, name, &brightnessScalar);
@@ -170,7 +170,7 @@ namespace gm {
         rm::loadObjWithoutUV(path.c_str(), internals.vertices, internals.normals);  
         gm::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices); // TODO: why *4?
         for(auto v : internals.vertices){
-            colors.push_back(glm::vec3(1.0, 1.0, 1.0));
+            colors.push_back(glm::vec3(1.0, 0, 1.0));
         }
         gm::genBuffer3(&colorbuffer, colors.size()*6*3, colors); // TODO: why *4?
     }

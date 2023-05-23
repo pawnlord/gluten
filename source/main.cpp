@@ -113,27 +113,39 @@ int main(){
 	GLuint uvbuffer;
 	gm::genBuffer2(&uvbuffer, g_uv_buffer_data.size()*6*2, g_uv_buffer_data);
 
-    shader::GltnShaderPipeline pipeline{
+    shader::GltnShaderPipeline uvPipeline{
         "source/shaders/uvvertexshader.glsl", 
         "source/shaders/uvfragmentshader.glsl", 
-        0, 
-        12};
+        0};
+        
+    shader::GltnShaderPipeline colorPipeline{
+        "source/shaders/colorvertexshader.glsl", 
+        "source/shaders/colorfragmentshader.glsl", 
+        0};
 
 
-    gm::GltnUVObject monkey{"test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&pipeline)};
+    gm::GltnUVObject skewedCube{"test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&uvPipeline)};
     
+    skewedCube.internals.addBrightnessScalar("bs")
+    ->addMVP("MVP")
+    ->addVertexBuffer(0)
+    ->addInShaderVariable(1, 2, skewedCube.uvbuffer);
+
+    skewedCube.usingTexture("textureExample2.bmp");
+
+    gm::GltnNonUVObject monkey{"test2.obj", std::shared_ptr<shader::GltnShaderPipeline>(&colorPipeline)};
+
     monkey.internals.addBrightnessScalar("bs")
     ->addMVP("MVP")
     ->addVertexBuffer(0)
-    ->addInShaderVariable(1, 2, monkey.uvbuffer);
+    ->addInShaderVariable(1, 2, monkey.colorbuffer);
 
 
-    monkey.usingTexture("textureExample2.bmp");
 	GLfloat t = 0;
 	GLuint textureID = rm::loadBMP("textureExample.bmp");
 	GLuint textureID2 = rm::loadBMP("textureExample2.bmp");
 	
-    im::setBrightnessScalar(&monkey.internals.brightnessScalar);
+    im::setBrightnessScalar(&skewedCube.internals.brightnessScalar);
 	glfwSetScrollCallback(ctx.window, im::scrollCallback);
 
     do{
@@ -156,9 +168,15 @@ int main(){
 		glm::mat4 model = glm::mat4(1.0f);
 		gm::loadTexture(textureID);
 
-        monkey.updateModel([=](auto& model){
+        skewedCube.updateModel([=](auto& model){
             model = glm::mat4(1.0);
             model = glm::translate(model, glm::vec3(glm::sin(t) * 3, 0, 0));
+        });
+        skewedCube.display(ctx);
+        
+        monkey.updateModel([=](auto& model){
+            model = glm::mat4(1.0);
+            model = glm::translate(model, glm::vec3(0, glm::sin(t) * 3, 0));
         });
         monkey.display(ctx);
 

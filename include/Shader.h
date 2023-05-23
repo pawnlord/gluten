@@ -42,19 +42,18 @@ class GltnShaderPipeline;
 class GltnShaderPipeline{
     public:
     int attribLocation;
-    int verticesNum;
     std::vector<UniformShaderInput> uniforms; // Inputs uniform accross shader "instances?"
     std::vector<VertexShaderInput> vertexInputs;  // Inputs with buffers for vertex shaders
     GLuint shaderID;
-    GltnShaderPipeline(std::string vertexShader, std::string fragmentShader, int attribLocation, int verticesNum) 
-        : attribLocation{attribLocation}, verticesNum{verticesNum} {
+    GltnShaderPipeline(std::string vertexShader, std::string fragmentShader, int attribLocation) 
+        : attribLocation{attribLocation} {
         // TODO: Cache Shaders
         shaderID = rm::LoadShaders(vertexShader.c_str(), fragmentShader.c_str());
     }
 
     GltnShaderPipeline *addUniformVariable(ShaderInputType type, std::string name, void *data);
     GltnShaderPipeline *addInShaderVariable(int attribNum, int attribSize, GLuint& buffer);
-    void draw(gm::GltnGraphicsContext ctx, glm::mat4 Model);
+    void draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, int verticesNum);
 
 };
 
