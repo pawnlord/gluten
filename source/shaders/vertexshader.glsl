@@ -10,7 +10,7 @@ out float brightness;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
-uniform float bs;
+uniform float bs = 1.0;
 
 void main(){
 

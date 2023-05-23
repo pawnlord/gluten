@@ -117,7 +117,7 @@ int main(){
     shader::GltnShaderPipeline pipeline{0, 12};
 
 
-    gm::GltnFileObject monkey{"test_obj.obj", std::make_shared(pipeline)};
+    gm::GltnFileObject monkey{"test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&pipeline)};
     
     pipeline.addUniformVariable(shader::Mat4, "MVP", &monkey.mvp)
     ->addUniformVariable(shader::Float1, "brightness_scalar", &monkey.brightnessScalar)

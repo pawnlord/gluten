@@ -1,10 +1,11 @@
+
 #ifndef GLTNSHADER_H
 #define GLTNSHADER_H
 // File for describing the behavior and layout of a shader pipeline
 #include <memory>
 #include <string>
 #include <vector>
-
+#define GLEW_STATIC
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
 // Include GLM
@@ -12,6 +13,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 // Include GLFW
 #include <GLFW/glfw3.h>
+
 #include "../include/GraphicsContext.h"
 
 namespace shader{

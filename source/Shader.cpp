@@ -1,4 +1,15 @@
+
+#define GLEW_STATIC
+
 #include "../include/Shader.h"
+
+// Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
+#include <GL/glew.h>
+// Include GLM
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+// Include GLFW
+#include <GLFW/glfw3.h>
 
 using namespace shader;
 
@@ -15,7 +26,7 @@ GltnShaderPipeline *GltnShaderPipeline::addInShaderVariable(int attribNum, int a
 void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, GLuint programID){
     for(auto& uniform : this->uniforms){
         GLuint id = glGetUniformLocation(programID, uniform.name.c_str());
-		switch(uniform.type){
+	    switch(uniform.type){
             case Mat4:
             glUniformMatrix4fv(id, 1, GL_FALSE, (GLfloat*)uniform.data);
             break;
@@ -28,7 +39,7 @@ void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, GLui
         }
     }
     for(auto& vertexInput : this->vertexInputs){
-        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(vertexInput.attribNum);
         glBindBuffer(GL_ARRAY_BUFFER, vertexInput.buffer);
         
 		glVertexAttribPointer(attribLocation+vertexInput.attribNum, vertexInput.attribSize, 
@@ -37,5 +48,34 @@ void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, GLui
 		
     }
     glUseProgram(programID);
-    glDrawArrays(GL_TRIANGLES, 0, verticesNum); 
+    glDrawArrays(GL_TRIANGLES, 0, verticesNum*3); 
+    // glm::mat4 mvp = ctx.projection * ctx.view * Model; // Remember, matrix multiplication is the other way around
+
+
+    // Get a handle for our "MVP" uniform
+    // GLuint matrixID = glGetUniformLocation(programID, "MVP");
+    
+    // // Send our transformation to the currently bound shader, in the "MVP" uniform
+    // glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
+
+    // GLuint brightnessID = glGetUniformLocation(programID, "bs");
+    
+    // glUniform1f(brightnessID, ctx.brightnessScalar);		
+    
+    // // 1st attribute buffer : vertices
+    // glEnableVertexAttribArray(0);
+    // glBindBuffer(GL_ARRAY_BUFFER, vertexInputs[0].buffer);
+    
+    // glVertexAttribPointer(attribLocation, vertexInputs[0].attribSize, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    
+    // // 2nd attribute buffer : colors
+    // glEnableVertexAttribArray(1);
+    // glBindBuffer(GL_ARRAY_BUFFER, vertexInputs[1].buffer);
+    
+    // glVertexAttribPointer(attribLocation+1, vertexInputs[1].attribSize, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    
+    // glUseProgram(programID);
+    
+    // glDrawArrays(GL_TRIANGLES, 0, verticesNum*3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+        
 }

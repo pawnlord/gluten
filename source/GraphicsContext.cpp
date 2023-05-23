@@ -1,3 +1,4 @@
+#define GLEW_STATIC
 #include <GL/glew.h>
 // Include GLM
 #include <glm/glm.hpp>
