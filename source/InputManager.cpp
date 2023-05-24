@@ -27,11 +27,11 @@ namespace im {
     // Initial Field of View
     float FoV = 60.0f;
     float speed = 3.0f; // 3 units / second
-    float mouseSpeed = 1.0f;
+    float mouseSpeed = 0.007f;
     float *brightnessScalar = nullptr;
     void computeMatricesFromInputs(GLFWwindow* window){
         double currentTime = glfwGetTime();
-        float deltaTime = float(currentTime - lastTime);
+        float deltaTime = (float)(currentTime - lastTime);
         // Get mouse position
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -42,8 +42,8 @@ namespace im {
         // Reset mouse position for next frame
         glfwSetCursorPos(window, width/2, height/2);
         // Compute new orientation
-        horizontalAngle += mouseSpeed * deltaTime * float( width/2 - xpos );
-        verticalAngle   += mouseSpeed * deltaTime * float( height/2 - ypos );
+        horizontalAngle += mouseSpeed  * (float)( width/2 - xpos );
+        verticalAngle   += mouseSpeed  * (float)( height/2 - ypos );
         verticalAngle = glm::clamp(verticalAngle, -3.14f/2, 3.14f/2);
         lastTime = currentTime;
 
