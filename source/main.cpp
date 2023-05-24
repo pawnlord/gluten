@@ -122,23 +122,35 @@ int main(){
         "source/shaders/colorvertexshader.glsl", 
         "source/shaders/colorfragmentshader.glsl", 
         0};
+    
+    uvPipeline.addUniformVariable(shader::Float1, "bs")
+    ->addUniformVariable(shader::Mat4, "MVP")
+    ->addInShaderVariable(0, 3)
+    ->addInShaderVariable(1, 2);
+    
+    colorPipeline.addUniformVariable(shader::Float1, "bs")
+    ->addUniformVariable(shader::Mat4, "MVP")
+    ->addInShaderVariable(0, 3)
+    ->addInShaderVariable(1, 3);
 
 
     gm::GltnUVObject skewedCube{"test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&uvPipeline)};
     
     skewedCube.internals.addBrightnessScalar("bs")
-    ->addMVP("MVP")
-    ->addVertexBuffer(0)
-    ->addInShaderVariable(1, 2, skewedCube.uvbuffer);
+    ->addMVP("MVP");
+
+    skewedCube.internals.addVertexBuffer()
+    ->addInShaderVariable(&skewedCube.uvbuffer);
 
     skewedCube.usingTexture("textureExample2.bmp");
 
     gm::GltnNonUVObject monkey{"test2.obj", std::shared_ptr<shader::GltnShaderPipeline>(&colorPipeline)};
 
     monkey.internals.addBrightnessScalar("bs")
-    ->addMVP("MVP")
-    ->addVertexBuffer(0)
-    ->addInShaderVariable(1, 3, monkey.colorbuffer);
+    ->addMVP("MVP");
+
+    monkey.internals.addVertexBuffer()
+    ->addInShaderVariable(&monkey.colorbuffer);
 
 
 	GLfloat t = 0;

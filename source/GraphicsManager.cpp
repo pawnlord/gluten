@@ -57,28 +57,28 @@ namespace gm {
 
     void GltnInternal::display(GltnGraphicsContext ctx) {
         mvp = ctx.projection * ctx.view * model; // Remember, matrix multiplication is the other way around
-        pipeline->draw(ctx, model, vertices.size());
+        pipeline->draw(ctx, model, vertices.size(), uniformValues, buffers);
     };
     GltnInternal *GltnInternal::addBrightnessScalar(std::string name){
-        pipeline->addUniformVariable(shader::Float1, name, &brightnessScalar);
-        return this;
+        return addUniformVariable(name, &brightnessScalar);
     }
     GltnInternal *GltnInternal::addMVP(std::string name){
-        pipeline->addUniformVariable(shader::Mat4, name, &mvp);
+        return addUniformVariable(name, &mvp);
+    }
+    GltnInternal *GltnInternal::addVertexBuffer(){
+        return addInShaderVariable(&vertexbuffer);
+    }
+    GltnInternal *GltnInternal::addUniformVariable(std::string name, void *data){
+        uniformValues[name] = data;
         return this;
     }
-    GltnInternal *GltnInternal::addVertexBuffer(int attribNum){
-        return addInShaderVariable(attribNum, 3, vertexbuffer);
-    }
-    GltnInternal *GltnInternal::addUniformVariable(shader::ShaderInputType type, std::string name, void *data){
-        pipeline->addUniformVariable(type, name, data);
-        return this;
-    }
-    GltnInternal *GltnInternal::addInShaderVariable(int attribNum, int attribSize, GLuint& buffer){
-        pipeline->addInShaderVariable(attribNum, attribSize, buffer);
+    GltnInternal *GltnInternal::addInShaderVariable(GLuint *buffer){
+        buffers.push_back(buffer);
         return this;
     }
     
+    
+
 
     void GltnUVObject::load(std::string path){
         rm::loadObjWithUV(path.c_str(), internals.vertices, uvs, internals.normals);  

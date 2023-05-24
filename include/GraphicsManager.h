@@ -46,6 +46,8 @@ namespace gm {
         glm::mat4 mvp;
         std::vector<vec3> normals;
         std::vector<vec3> vertices;
+        std::unordered_map<std::string, void *> uniformValues;
+        std::vector<GLuint*> buffers;
         GLuint vertexbuffer;
         float brightnessScalar = 1.0;
         glm::mat4 model = glm::mat4(1.0f);
@@ -54,9 +56,9 @@ namespace gm {
         void display(GltnGraphicsContext ctx);
         GltnInternal *addBrightnessScalar(std::string name);
         GltnInternal *addMVP(std::string name);
-        GltnInternal *addVertexBuffer(int attribNum);
-        GltnInternal *addUniformVariable(shader::ShaderInputType type, std::string name, void *data);
-        GltnInternal *addInShaderVariable(int attribNum, int attribSize, GLuint& buffer);
+        GltnInternal *addVertexBuffer();
+        GltnInternal *addUniformVariable(std::string name, void *data);
+        GltnInternal *addInShaderVariable(GLuint *buffer);
     };
 
     class GltnUVObject : public GltnObject {
@@ -88,7 +90,7 @@ namespace gm {
             void updateModel(std::function<void(glm::mat4& model)> fp){
                 internals.updateModel(fp);
             }
-            
+
             GltnNonUVObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) 
                 : internals{pipeline}{
                 load(path);

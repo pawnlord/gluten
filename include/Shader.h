@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #define GLEW_STATIC
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
@@ -26,15 +27,13 @@ enum ShaderInputType {
 struct UniformShaderInput{
     ShaderInputType type;
     std::string name;
-    void *data;
-    UniformShaderInput(ShaderInputType type, std::string name, void *data) : type{type}, name{name}, data{data} {}
+    UniformShaderInput(ShaderInputType type, std::string name) : type{type}, name{name} {}
 };
 
 struct VertexShaderInput {
     int attribNum;
     int attribSize;
-    GLuint& buffer;
-    VertexShaderInput(int attribNum, int attribSize, GLuint& buffer) : attribNum{attribNum}, attribSize{attribSize}, buffer{buffer} {}
+    VertexShaderInput(int attribNum, int attribSize) : attribNum{attribNum}, attribSize{attribSize} {}
 };
 
 class GltnShaderPipeline;
@@ -51,9 +50,13 @@ class GltnShaderPipeline{
         shaderID = rm::LoadShaders(vertexShader.c_str(), fragmentShader.c_str());
     }
 
-    GltnShaderPipeline *addUniformVariable(ShaderInputType type, std::string name, void *data);
-    GltnShaderPipeline *addInShaderVariable(int attribNum, int attribSize, GLuint& buffer);
-    void draw(gm::GltnGraphicsContext ctx, glm::mat4 Model, int verticesNum);
+    GltnShaderPipeline *addUniformVariable(ShaderInputType type, std::string name);
+    GltnShaderPipeline *addInShaderVariable(int attribNum, int attribSize);
+    void draw(gm::GltnGraphicsContext ctx, 
+        glm::mat4 Model, 
+        int verticesNum, 
+        const std::unordered_map<std::string, void *>& uniformValues, 
+        const std::vector<GLuint*>& buffers); 
 
 };
 

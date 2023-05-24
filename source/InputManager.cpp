@@ -88,15 +88,19 @@ namespace im {
             up                  // Head is up (set to 0,-1,0 to look upside-down)
         );
     }
+
     glm::mat4 getViewMatrix(){
         return viewMatrix;
     }
+    
     glm::mat4 getProjectionMatrix(){
         return projectionMatrix;
     }
+    
     void setBrightnessScalar(float *_brightnessScalar){
         brightnessScalar = _brightnessScalar;
     }
+    
     void scrollCallback(GLFWwindow* window, double xoffset, double yoffset){
         // FoV += yoffset;
         // printf("callback called, %f %f %f\n", FoV, xoffset, yoffset);
