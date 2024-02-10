@@ -1,7 +1,7 @@
 #ifndef INPUTMANAGER_H
 #define INPUTMANAGER_H
 
-#define GLEW_STATIC
+// #define GLEW_STATIC
 #include <stdio.h>
 #include <iostream>
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.

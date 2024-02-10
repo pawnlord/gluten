@@ -1,0 +1,4 @@
+lib/glfw
+.vscode
+build
+glew

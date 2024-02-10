@@ -7,7 +7,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#define GLEW_STATIC
+// #define GLEW_STATIC
 
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
@@ -23,6 +23,7 @@ using namespace glm;
 #include "../include/InputManager.h"
 #include "../include/Shader.h"
 
+#include "config.h"
 
 static  std::vector<vec3> g_vertex_buffer_data = {
     vec3(-1.0f,-1.0f,-1.0f), // triangle 1 : begin
@@ -114,13 +115,13 @@ int main(){
 	gm::genBuffer2(&uvbuffer, g_uv_buffer_data.size()*6*2, g_uv_buffer_data);
 
     shader::GltnShaderPipeline uvPipeline{
-        "source/shaders/uvvertexshader.glsl", 
-        "source/shaders/uvfragmentshader.glsl", 
+        SHADERS_FOLDER "uvvertexshader.glsl", 
+        SHADERS_FOLDER "uvfragmentshader.glsl", 
         0};
         
     shader::GltnShaderPipeline colorPipeline{
-        "source/shaders/colorvertexshader.glsl", 
-        "source/shaders/colorfragmentshader.glsl", 
+        SHADERS_FOLDER "colorvertexshader.glsl", 
+        SHADERS_FOLDER "colorfragmentshader.glsl", 
         0};
     
     uvPipeline.addUniformVariable(shader::Float1, "bs")
@@ -134,7 +135,7 @@ int main(){
     ->addInShaderVariable(1, 3);
 
 
-    gm::GltnUVObject skewedCube{"test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&uvPipeline)};
+    gm::GltnUVObject skewedCube{RES_FOLDER "test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&uvPipeline)};
     
     skewedCube.internals.addBrightnessScalar("bs")
     ->addMVP("MVP");
@@ -142,9 +143,9 @@ int main(){
     skewedCube.internals.addVertexBuffer()
     ->addInShaderVariable(&skewedCube.uvbuffer);
 
-    skewedCube.usingTexture("textureExample2.bmp");
+    skewedCube.usingTexture(RES_FOLDER "textureExample2.bmp");
 
-    gm::GltnNonUVObject monkey{"test2.obj", std::shared_ptr<shader::GltnShaderPipeline>(&colorPipeline)};
+    gm::GltnNonUVObject monkey{RES_FOLDER "test2.obj", std::shared_ptr<shader::GltnShaderPipeline>(&colorPipeline)};
 
     monkey.internals.addBrightnessScalar("bs")
     ->addMVP("MVP");
@@ -188,6 +189,7 @@ int main(){
         glfwSwapBuffers(ctx.window);
         glfwPollEvents();
 		t+=0.0005;
+        
     } // Check if the ESC key was pressed or the window was closed
     while( glfwGetKey(ctx.window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(ctx.window) == 0 );

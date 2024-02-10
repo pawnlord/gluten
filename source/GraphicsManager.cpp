@@ -1,4 +1,4 @@
-#define GLEW_STATIC
+// #define GLEW_STATIC
 #include <stdio.h>
 #include <stdlib.h>
 

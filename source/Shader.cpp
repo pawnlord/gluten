@@ -1,5 +1,5 @@
 
-#define GLEW_STATIC
+// #define GLEW_STATIC
 
 #include "../include/Shader.h"
 

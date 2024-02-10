@@ -1,4 +1,4 @@
-#define GLEW_STATIC
+// #define GLEW_STATIC
 #include <stdio.h>
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>

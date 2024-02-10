@@ -9,7 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#define GLEW_STATIC
+// #define GLEW_STATIC
 
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
@@ -21,6 +21,7 @@
 
 
 namespace rm{
+    
     GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path){
 
         // Create the shaders

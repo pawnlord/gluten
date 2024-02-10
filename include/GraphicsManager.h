@@ -1,6 +1,6 @@
 #ifndef GRAPHICSMANAGER_H
 #define GRAPHICSMANAGER_H
-#define GLEW_STATIC
+// #define GLEW_STATIC
 #include <vector>
 #include <string>
 #include <functional>
