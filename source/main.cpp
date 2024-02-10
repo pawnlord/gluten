@@ -110,9 +110,9 @@ int main(){
     gm::GltnGraphicsContext ctx{1024, 768, "Tutorial 01", 45.0};
         
     GLuint vertexbuffer;
-	gm::genBuffer3(&vertexbuffer, g_vertex_buffer_data.size()*6*3, g_vertex_buffer_data); // TODO: why *4?
+	gm::genBuffer3(&vertexbuffer, (GLuint)g_vertex_buffer_data.size() * 6 * 3, g_vertex_buffer_data); // TODO: why *4?
 	GLuint uvbuffer;
-	gm::genBuffer2(&uvbuffer, g_uv_buffer_data.size()*6*2, g_uv_buffer_data);
+	gm::genBuffer2(&uvbuffer, (GLuint)g_uv_buffer_data.size() * 6 * 2, g_uv_buffer_data);
 
     shader::GltnShaderPipeline uvPipeline{
         SHADERS_FOLDER "uvvertexshader.glsl", 
@@ -143,7 +143,7 @@ int main(){
     skewedCube.internals.addVertexBuffer()
     ->addInShaderVariable(&skewedCube.uvbuffer);
 
-    skewedCube.usingTexture(RES_FOLDER "textureExample2.bmp");
+    skewedCube.usingTexture(RES_FOLDER "textureExample.bmp");
 
     gm::GltnNonUVObject monkey{RES_FOLDER "test2.obj", std::shared_ptr<shader::GltnShaderPipeline>(&colorPipeline)};
 
@@ -155,8 +155,14 @@ int main(){
 
 
 	GLfloat t = 0;
-	GLuint textureID = rm::loadBMP("textureExample.bmp");
-	GLuint textureID2 = rm::loadBMP("textureExample2.bmp");
+    
+    skewedCube.internals.addUpdate([&](auto& model){
+        model = glm::mat4(1.0);
+        model = glm::translate(model, glm::vec3(0, glm::sin(t) * 3,  0));
+    });
+
+	GLuint textureID = rm::loadBMP(RES_FOLDER "textureExample.bmp");
+	GLuint textureID2 = rm::loadBMP(RES_FOLDER "textureExample2.bmp");
 	
     im::setBrightnessScalar(&skewedCube.internals.brightnessScalar);
 	glfwSetScrollCallback(ctx.window, im::scrollCallback);
@@ -172,23 +178,13 @@ int main(){
 		glm::mat4 model = glm::mat4(1.0f);
 		gm::loadTexture(textureID);
 
-        skewedCube.updateModel([=](auto& model){
-            model = glm::mat4(1.0);
-            model = glm::translate(model, glm::vec3(glm::sin(t) * 3, 0, 0));
-        });
         skewedCube.display(ctx);
-        
-        monkey.updateModel([=](auto& model){
-            model = glm::mat4(1.0);
-            model = glm::translate(model, glm::vec3(0, glm::sin(t) * 3, 0));
-        });
-        monkey.display(ctx);
 
 		glDisableVertexAttribArray(0);
         
         glfwSwapBuffers(ctx.window);
         glfwPollEvents();
-		t+=0.0005;
+		t += (GLfloat)0.0005;
         
     } // Check if the ESC key was pressed or the window was closed
     while( glfwGetKey(ctx.window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&

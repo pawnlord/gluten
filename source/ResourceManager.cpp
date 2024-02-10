@@ -1,6 +1,5 @@
 #include "../include/ResourceManager.h"
 
-// Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
@@ -11,17 +10,12 @@
 #include <cstring>
 // #define GLEW_STATIC
 
-// Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
-// Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-// Include GLFW
+
 #include <GLFW/glfw3.h>
 
-// #include <assimp/Importer.hpp>
-// #include <assimp/scene.h>
-// #include <assimp/postprocess.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -119,21 +113,18 @@ namespace rm{
     GLuint loadBMP(std::string filename) {
         int width, height, channels;
         unsigned char *data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+        if (data == nullptr) {
+            printf("Impossible to open the file %s!\n", filename.c_str());
+        }
 
-        // Create one OpenGL texture
         GLuint textureID;
         glGenTextures(1, &textureID);
 
-        // "Bind" the newly created texture : all future texture functions will modify this texture
         glBindTexture(GL_TEXTURE_2D, textureID);
 
-        // Give the image to OpenGL
         glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-        // When MAGnifying the image (no bigger mipmap available), use LINEAR filtering
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // When MINifying the image, use a LINEAR blend of two mipmaps, each filtered LINEARLY too
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        // Generate mipmaps, by the way.
         glGenerateMipmap(GL_TEXTURE_2D);
         return textureID;
     }
@@ -149,7 +140,7 @@ namespace rm{
 
         FILE * file = fopen(path, "r");
         if( file == NULL ){
-            printf("Impossible to open the file !\n");
+            printf("Impossible to open the file %s!\n", path);
             return false;
         }
         int line = 0;
@@ -219,7 +210,7 @@ namespace rm{
 
         FILE * file = fopen(path, "r");
         if( file == NULL ){
-            printf("Impossible to open the file !\n");
+            printf("Impossible to open the file %s!\n", path);
             return false;
         }
         int line = 0;
@@ -242,7 +233,7 @@ namespace rm{
                 temp_normals.push_back(normal);
             }else if ( strcmp( lineHeader, "f" ) == 0 ){
                 std::string vertex1, vertex2, vertex3;
-                unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+                unsigned int vertexIndex[3], normalIndex[3];
                 int matches = fscanf(file, "%d//%d %d//%d %d//%d\n", &vertexIndex[0], &normalIndex[0], &vertexIndex[1], &normalIndex[1], &vertexIndex[2], &normalIndex[2] );
                 if (matches != 6){
                     printf("(line %d); File can't be read by our simple parser. Try exporting with other options\n", line);
@@ -263,7 +254,7 @@ namespace rm{
         }
         for( unsigned int i=0; i<normalIndices.size(); i++ ){
             unsigned int normalIndex = normalIndices[i];
-            glm::vec3 normal= temp_vertices[normalIndex-1 ];
+            glm::vec3 normal= temp_normals[normalIndex - 1];
             out_normals.push_back(normal);
         }
         return true;

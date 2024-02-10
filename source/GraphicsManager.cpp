@@ -56,8 +56,12 @@ namespace gm {
     }
 
     void GltnInternal::display(GltnGraphicsContext ctx) {
+        for (auto& update : this->updates) {
+            update(model);
+        }
+
         mvp = ctx.projection * ctx.view * model; // Remember, matrix multiplication is the other way around
-        pipeline->draw(ctx, model, vertices.size(), uniformValues, buffers);
+        pipeline->draw(ctx, model, (GLuint)vertices.size(), uniformValues, buffers);
     };
     GltnInternal *GltnInternal::addBrightnessScalar(std::string name){
         return addUniformVariable(name, &brightnessScalar);
@@ -76,8 +80,10 @@ namespace gm {
         buffers.push_back(buffer);
         return this;
     }
-    
-    
+    GltnInternal *GltnInternal::addUpdate(std::function<void(glm::mat4& model)> fp) {
+        updates.push_back(fp);
+        return this;
+    }
 
 
     void GltnUVObject::load(std::string path){

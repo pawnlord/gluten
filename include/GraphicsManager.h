@@ -48,10 +48,12 @@ namespace gm {
         std::vector<vec3> vertices;
         std::unordered_map<std::string, void *> uniformValues;
         std::vector<GLuint*> buffers;
+        std::vector<std::function<void(glm::mat4& model)>> updates;
         GLuint vertexbuffer;
         float brightnessScalar = 1.0;
         glm::mat4 model = glm::mat4(1.0f);
         GltnInternal(std::shared_ptr<shader::GltnShaderPipeline> pipeline): pipeline{pipeline} {} 
+        GltnInternal *addUpdate(std::function<void(glm::mat4& model)> fp);
         void updateModel(std::function<void(glm::mat4& model)> fp);
         void display(GltnGraphicsContext ctx);
         GltnInternal *addBrightnessScalar(std::string name);
