@@ -2,3 +2,4 @@ lib/glfw
 .vscode
 build
 glew
+lib/assimp

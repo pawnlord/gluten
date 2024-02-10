@@ -146,31 +146,6 @@ namespace rm{
         std::vector< glm::vec3 > temp_vertices,  temp_normals;
         std::vector< glm::vec2 > temp_uvs;
 
-        // const aiScene *scene = importer.ReadFile(ASSIMP_TEST_MODELS_DIR path.c_str(), aiProcess_ValidateDataStructure);
-        // // get the mesh
-        // if (!scene->HasMeshes()) {
-        //     return false;
-        // }
-
-        // // I have no idea how this API works
-        // const aiMesh *mesh = scene->mMeshes[0];
-
-        // // Convert mesh to vectors
-        // for (int i = 0; i < mesh->mNumVertices; i++) {
-        //     temp_vertices.push_back(glm::vec3(
-        //         mesh->mVertices[i].x,
-        //         mesh->mVertices[i].y,
-        //         mesh->mVertices[i].z
-        //     ));
-        // }
-        
-        // for (int i = 0; i < mesh->mNumVertices; i++) {
-        //     temp_normals.push_back(glm::vec3(
-        //         mesh->mNormals[i].x,
-        //         mesh->mNormals[i].y,
-        //         mesh->mNormals[i].z
-        //     ));
-        // }
 
         FILE * file = fopen(path, "r");
         if( file == NULL ){
@@ -218,19 +193,19 @@ namespace rm{
                 normalIndices.push_back(normalIndex[2]);
             }
         }
-        for( unsigned int i=0; i<vertexIndices.size(); i++ ){
+        for (unsigned int i = 0; i < vertexIndices.size(); i++) {
             unsigned int vertexIndex = vertexIndices[i];
-            glm::vec3 vertex = temp_vertices[ vertexIndex-1 ];
+            glm::vec3 vertex = temp_vertices[vertexIndex - 1];
             out_vertices.push_back(vertex);
         }
-        for( unsigned int i=0; i<uvIndices.size(); i++ ){
+        for (unsigned int i = 0; i < uvIndices.size(); i++) {
             unsigned int uvIndex = uvIndices[i];
             glm::vec2 uv = temp_uvs[uvIndex - 1];
             out_uvs.push_back(uv);
         }
-        for( unsigned int i=0; i<normalIndices.size(); i++ ){
+        for (unsigned int i = 0; i < normalIndices.size(); i++){
             unsigned int normalIndex = normalIndices[i];
-            glm::vec3 normal= temp_normals[normalIndex-1];
+            glm::vec3 normal = temp_normals[normalIndex - 1];
             out_normals.push_back(normal);
         }
         return true;
