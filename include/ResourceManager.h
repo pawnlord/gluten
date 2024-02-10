@@ -8,10 +8,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 // Include GLFW
 #include <GLFW/glfw3.h>
+#include <string>
 
 namespace rm{
     GLuint LoadShaders(const char* vertex_file_path, const char* fragment_file_path);
-    GLuint loadBMP(const char* imagepath);
+    GLuint loadBMP(std::string imagepath);
     bool loadObjWithUV(const char * path,
         std::vector < glm::vec3 > & out_vertices,
         std::vector < glm::vec2 > & out_uvs,

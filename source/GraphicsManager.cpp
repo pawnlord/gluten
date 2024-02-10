@@ -111,7 +111,7 @@ namespace gm {
         internals.updateModel(fp);
     }
     void GltnUVObject::usingTexture(std::string path){
-    	textureID = rm::loadBMP(path.c_str());
+    	textureID = rm::loadBMP(path);
     }
     
 }

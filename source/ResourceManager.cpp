@@ -19,9 +19,16 @@
 // Include GLFW
 #include <GLFW/glfw3.h>
 
+// #include <assimp/Importer.hpp>
+// #include <assimp/scene.h>
+// #include <assimp/postprocess.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 
 namespace rm{
-    
+
     GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path){
 
         // Create the shaders
@@ -109,46 +116,9 @@ namespace rm{
 
         return programID;
     }
-    GLuint loadBMP(const char* imagepath) {
-        // Data read from the header of the BMP file
-        unsigned char header[54]; // Each BMP file begins by a 54-bytes header
-        unsigned int dataPos;     // Position in the file where the actual data begins
-        unsigned int width, height;
-        unsigned int imageSize;   // = width*height*3
-        
-        // Actual RGB data
-        unsigned char * data;
-
-        // Open the file
-        FILE * file = fopen(imagepath,"rb");
-        if (!file){printf("Image %s could not be opened\n"); return 0;}
- 
-        if ( fread(header, 1, 54, file)!=54 ){ // If not 54 bytes read : problem
-            printf("Not a correct BMP file: Header incorrect size\n");
-            return false;
-        }
-        if ( header[0]!='B' || header[1]!='M' ){
-            printf("Not a correct BMP file: Magic Number does not match\n");
-            return 0;
-        }
-        // Read ints from the byte array
-        dataPos    = *(int*)&(header[0x0A]);
-        imageSize  = *(int*)&(header[0x22]);
-        width      = *(int*)&(header[0x12]);
-        height     = *(int*)&(header[0x16]);
-
-        // Some BMP files are misformatted, guess missing information
-        if (imageSize==0) imageSize=width*height*3; 
-        if (dataPos==0) dataPos=54; 
-
-        // Create a buffer
-        data = new unsigned char [imageSize];
-
-        // Read the actual data from the file into the buffer
-        fread(data,1,imageSize,file);
-
-        //Everything is in memory now, the file can be closed
-        fclose(file);
+    GLuint loadBMP(std::string filename) {
+        int width, height, channels;
+        unsigned char *data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
 
         // Create one OpenGL texture
         GLuint textureID;
@@ -167,7 +137,7 @@ namespace rm{
         glGenerateMipmap(GL_TEXTURE_2D);
         return textureID;
     }
-     bool loadObjWithUV(const char * path,
+    bool loadObjWithUV(const char *path,
         std::vector < glm::vec3 > & out_vertices,
         std::vector < glm::vec2 > & out_uvs,
         std::vector < glm::vec3 > & out_normals
@@ -175,6 +145,32 @@ namespace rm{
         std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
         std::vector< glm::vec3 > temp_vertices,  temp_normals;
         std::vector< glm::vec2 > temp_uvs;
+
+        // const aiScene *scene = importer.ReadFile(ASSIMP_TEST_MODELS_DIR path.c_str(), aiProcess_ValidateDataStructure);
+        // // get the mesh
+        // if (!scene->HasMeshes()) {
+        //     return false;
+        // }
+
+        // // I have no idea how this API works
+        // const aiMesh *mesh = scene->mMeshes[0];
+
+        // // Convert mesh to vectors
+        // for (int i = 0; i < mesh->mNumVertices; i++) {
+        //     temp_vertices.push_back(glm::vec3(
+        //         mesh->mVertices[i].x,
+        //         mesh->mVertices[i].y,
+        //         mesh->mVertices[i].z
+        //     ));
+        // }
+        
+        // for (int i = 0; i < mesh->mNumVertices; i++) {
+        //     temp_normals.push_back(glm::vec3(
+        //         mesh->mNormals[i].x,
+        //         mesh->mNormals[i].y,
+        //         mesh->mNormals[i].z
+        //     ));
+        // }
 
         FILE * file = fopen(path, "r");
         if( file == NULL ){
@@ -203,7 +199,7 @@ namespace rm{
                 glm::vec3 normal;
                 fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
                 temp_normals.push_back(normal);
-            }else if ( strcmp( lineHeader, "f" ) == 0 ){
+            } else if ( strcmp( lineHeader, "f" ) == 0 ){
                 std::string vertex1, vertex2, vertex3;
                 unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
                 int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
@@ -216,7 +212,7 @@ namespace rm{
                 vertexIndices.push_back(vertexIndex[2]);
                 uvIndices    .push_back(uvIndex[0]);
                 uvIndices    .push_back(uvIndex[1]);
-                uvIndices     .push_back(uvIndex[2]);
+                uvIndices    .push_back(uvIndex[2]);
                 normalIndices.push_back(normalIndex[0]);
                 normalIndices.push_back(normalIndex[1]);
                 normalIndices.push_back(normalIndex[2]);
@@ -229,12 +225,12 @@ namespace rm{
         }
         for( unsigned int i=0; i<uvIndices.size(); i++ ){
             unsigned int uvIndex = uvIndices[i];
-            glm::vec3 uv= temp_vertices[uvIndex-1 ];
+            glm::vec2 uv = temp_uvs[uvIndex - 1];
             out_uvs.push_back(uv);
         }
         for( unsigned int i=0; i<normalIndices.size(); i++ ){
             unsigned int normalIndex = normalIndices[i];
-            glm::vec3 normal= temp_vertices[normalIndex-1 ];
+            glm::vec3 normal= temp_normals[normalIndex-1];
             out_normals.push_back(normal);
         }
         return true;
