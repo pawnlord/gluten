@@ -3,7 +3,13 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/lib/**",
+                "${workspaceFolder}/lib/glm",
+                "${workspaceFolder}/lib/glfw/include",
+                "${workspaceFolder}/lib/stb",
+                "${workspaceFolder}/lib/glew/include"
             ],
             "defines": [
                 "_DEBUG",

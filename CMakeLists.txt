@@ -45,6 +45,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 set(GLM_TEST_ENABLE OFF CACHE BOOL "GLM Build unit tests")
 
 add_executable(${PROJECT_NAME} source/main.cpp
+                               source/Camera.cpp
                                source/GraphicsContext.cpp
                                source/GraphicsManager.cpp
                                source/InputManager.cpp

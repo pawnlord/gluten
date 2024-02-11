@@ -25,6 +25,8 @@ using namespace glm;
 
 #include "config.h"
 
+using namespace gluten;
+
 static  std::vector<vec3> g_vertex_buffer_data = {
     vec3(-1.0f,-1.0f,-1.0f), // triangle 1 : begin
     vec3(-1.0f,-1.0f, 1.0f),
@@ -107,35 +109,35 @@ static std::vector<vec2> g_uv_buffer_data = {
 
 int main(){
 
-    gm::GltnGraphicsContext ctx{1024, 768, "Tutorial 01", 45.0};
+    GraphicsContext ctx{1024, 768, "Tutorial 01", 45.0};
         
     GLuint vertexbuffer;
-	gm::genBuffer3(&vertexbuffer, (GLuint)g_vertex_buffer_data.size() * 6 * 3, g_vertex_buffer_data); // TODO: why *4?
+	genBuffer3(&vertexbuffer, (GLuint)g_vertex_buffer_data.size() * 6 * 3, g_vertex_buffer_data); // TODO: why *4?
 	GLuint uvbuffer;
-	gm::genBuffer2(&uvbuffer, (GLuint)g_uv_buffer_data.size() * 6 * 2, g_uv_buffer_data);
+	genBuffer2(&uvbuffer, (GLuint)g_uv_buffer_data.size() * 6 * 2, g_uv_buffer_data);
 
-    shader::GltnShaderPipeline uvPipeline{
+    ShaderPipeline uvPipeline{
         SHADERS_FOLDER "uvvertexshader.glsl", 
         SHADERS_FOLDER "uvfragmentshader.glsl", 
         0};
         
-    shader::GltnShaderPipeline colorPipeline{
+    ShaderPipeline colorPipeline{
         SHADERS_FOLDER "colorvertexshader.glsl", 
         SHADERS_FOLDER "colorfragmentshader.glsl", 
         0};
     
-    uvPipeline.addUniformVariable(shader::Float1, "bs")
-    ->addUniformVariable(shader::Mat4, "MVP")
+    uvPipeline.addUniformVariable(Float1, "bs")
+    ->addUniformVariable(Mat4, "MVP")
     ->addInShaderVariable(0, 3)
     ->addInShaderVariable(1, 2);
     
-    colorPipeline.addUniformVariable(shader::Float1, "bs")
-    ->addUniformVariable(shader::Mat4, "MVP")
+    colorPipeline.addUniformVariable(Float1, "bs")
+    ->addUniformVariable(Mat4, "MVP")
     ->addInShaderVariable(0, 3)
     ->addInShaderVariable(1, 3);
 
 
-    gm::GltnUVObject skewedCube{RES_FOLDER "test_obj.obj", std::shared_ptr<shader::GltnShaderPipeline>(&uvPipeline)};
+    UVObject skewedCube{RES_FOLDER "test_obj.obj", std::shared_ptr<ShaderPipeline>(&uvPipeline)};
     
     skewedCube.internals.addBrightnessScalar("bs")
     ->addMVP("MVP");
@@ -145,7 +147,7 @@ int main(){
 
     skewedCube.usingTexture(RES_FOLDER "textureExample.bmp");
 
-    gm::GltnNonUVObject monkey{RES_FOLDER "test2.obj", std::shared_ptr<shader::GltnShaderPipeline>(&colorPipeline)};
+    NonUVObject monkey{RES_FOLDER "test2.obj", std::shared_ptr<ShaderPipeline>(&colorPipeline)};
 
     monkey.internals.addBrightnessScalar("bs")
     ->addMVP("MVP");
@@ -163,20 +165,28 @@ int main(){
 
 	GLuint textureID = rm::loadBMP(RES_FOLDER "textureExample.bmp");
 	GLuint textureID2 = rm::loadBMP(RES_FOLDER "textureExample2.bmp");
-	
-    im::setBrightnessScalar(&skewedCube.internals.brightnessScalar);
-	glfwSetScrollCallback(ctx.window, im::scrollCallback);
 
+    InputInfo inputInfo;
+    Camera camera;
+
+    registerInputInfo(inputInfo);
+
+    inputInfo.setBrightnessScalar(&skewedCube.internals.brightnessScalar);
+	
+    glfwSetScrollCallback(ctx.window, scrollCallback);
+    
+    glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    
     do{
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		im::computeMatricesFromInputs(ctx.window);
+		computeMatricesFromInputs(ctx.window, camera, inputInfo);
 		
-		ctx.view = im::getViewMatrix();
-		ctx.projection = im::getProjectionMatrix();
+		ctx.view = camera.getViewMatrix();
+		ctx.projection = camera.getProjectionMatrix();
         		
 		glm::mat4 model = glm::mat4(1.0f);
-		gm::loadTexture(textureID);
+		loadTexture(textureID);
 
         skewedCube.display(ctx);
 

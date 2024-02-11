@@ -13,7 +13,7 @@
 #include "../include/GraphicsManager.h"
 #include "../include/ResourceManager.h"
 
-namespace gm {
+namespace gluten {
 
     std::vector<GLfloat> unpack_vec3_vector(std::vector<vec3> v){
         std::vector<GLfloat> arr;
@@ -51,72 +51,79 @@ namespace gm {
         return 1;
     }
 
-    void GltnInternal::updateModel(std::function<void(glm::mat4& model)> fp){
+    void ObjectInternal::updateModel(std::function<void(glm::mat4& model)> fp){
         fp(model);
     }
 
-    void GltnInternal::display(GltnGraphicsContext ctx) {
+    void ObjectInternal::display(GraphicsContext ctx) {
         for (auto& update : this->updates) {
             update(model);
         }
 
         mvp = ctx.projection * ctx.view * model; // Remember, matrix multiplication is the other way around
         pipeline->draw(ctx, model, (GLuint)vertices.size(), uniformValues, buffers);
-    };
-    GltnInternal *GltnInternal::addBrightnessScalar(std::string name){
+    }
+
+    ObjectInternal *ObjectInternal::addBrightnessScalar(std::string name){
         return addUniformVariable(name, &brightnessScalar);
     }
-    GltnInternal *GltnInternal::addMVP(std::string name){
+
+    ObjectInternal *ObjectInternal::addMVP(std::string name){
         return addUniformVariable(name, &mvp);
     }
-    GltnInternal *GltnInternal::addVertexBuffer(){
+
+    ObjectInternal *ObjectInternal::addVertexBuffer(){
         return addInShaderVariable(&vertexbuffer);
     }
-    GltnInternal *GltnInternal::addUniformVariable(std::string name, void *data){
+
+    ObjectInternal *ObjectInternal::addUniformVariable(std::string name, void *data){
         uniformValues[name] = data;
         return this;
     }
-    GltnInternal *GltnInternal::addInShaderVariable(GLuint *buffer){
+
+    ObjectInternal *ObjectInternal::addInShaderVariable(GLuint *buffer){
         buffers.push_back(buffer);
         return this;
     }
-    GltnInternal *GltnInternal::addUpdate(std::function<void(glm::mat4& model)> fp) {
+
+    ObjectInternal *ObjectInternal::addUpdate(std::function<void(glm::mat4& model)> fp) {
         updates.push_back(fp);
         return this;
     }
 
 
-    void GltnUVObject::load(std::string path){
+    void UVObject::load(std::string path){
         rm::loadObjWithUV(path.c_str(), internals.vertices, uvs, internals.normals);  
-        gm::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices); // TODO: why *4?
-        gm::genBuffer2(&uvbuffer, internals.vertices.size()*6*3, uvs); // TODO: why *4?
+        gluten::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices); // TODO: why *4?
+        gluten::genBuffer2(&uvbuffer, internals.vertices.size()*6*3, uvs); // TODO: why *4?
 
     }
 
-    void GltnNonUVObject::load(std::string path){
+    void NonUVObject::load(std::string path){
         rm::loadObjWithoutUV(path.c_str(), internals.vertices, internals.normals);  
-        gm::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices); // TODO: why *4?
+        gluten::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices); // TODO: why *4?
         for(auto v : internals.vertices){
             colors.push_back(glm::vec3(1.0, 1.0, 1.0));
         }
-        gm::genBuffer3(&colorbuffer, colors.size()*6*3, colors); // TODO: why *4?
+        gluten::genBuffer3(&colorbuffer, colors.size()*6*3, colors); // TODO: why *4?
     }
 
-    void GltnNonUVObject::display(GltnGraphicsContext ctx) {
+    void NonUVObject::display(GraphicsContext ctx) {
         internals.display(ctx);
     }
 
-    void GltnUVObject::display(GltnGraphicsContext ctx) {
+    void UVObject::display(GraphicsContext ctx) {
         if(textureID != 0){
     		loadTexture(textureID);
         }
         internals.display(ctx);
     }
     
-    void GltnUVObject::updateModel(std::function<void(glm::mat4& model)> fp){
+    void UVObject::updateModel(std::function<void(glm::mat4& model)> fp){
         internals.updateModel(fp);
     }
-    void GltnUVObject::usingTexture(std::string path){
+
+    void UVObject::usingTexture(std::string path){
     	textureID = rm::loadBMP(path);
     }
     

@@ -9,9 +9,9 @@
 #include "../include/GraphicsManager.h"
 #include "../include/ResourceManager.h"
 
-namespace gm {
+namespace gluten {
 
-    GltnGraphicsContext::GltnGraphicsContext(int width, int height, std::string name, float projectionAngle){
+    GraphicsContext::GraphicsContext(int width, int height, std::string name, float projectionAngle){
         // Initialise GLFW
         if( !glfwInit() )
         {

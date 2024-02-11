@@ -11,11 +11,11 @@
 // Include GLFW
 #include <GLFW/glfw3.h>
 
-namespace gm {
+namespace gluten {
 
-    class GltnGraphicsContext {
+    class GraphicsContext {
         public: 
-            GltnGraphicsContext(int width, int height, std::string name, float projectionAngle);
+            GraphicsContext(int width, int height, std::string name, float projectionAngle);
             GLFWwindow* window; 
             GLuint VertexArrayID;
  	        glm::mat4 projection;

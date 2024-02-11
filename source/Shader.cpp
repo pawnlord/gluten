@@ -12,19 +12,19 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <sstream>
-using namespace shader;
+namespace gluten {
 
-GltnShaderPipeline *GltnShaderPipeline::addUniformVariable(ShaderInputType type, std::string name){
+ShaderPipeline *ShaderPipeline::addUniformVariable(ShaderInputType type, std::string name){
     uniforms.push_back(UniformShaderInput{type, name});
     return this;
 }
 
-GltnShaderPipeline *GltnShaderPipeline::addInShaderVariable(int attribNum, int attribSize){
+ShaderPipeline *ShaderPipeline::addInShaderVariable(int attribNum, int attribSize){
     vertexInputs.push_back(VertexShaderInput{attribNum, attribSize});
     return this;
 }
 
-void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx, 
+void ShaderPipeline::draw(gluten::GraphicsContext ctx, 
         glm::mat4 Model, 
         int verticesNum, 
         const std::unordered_map<std::string, void *>& uniformValues, 
@@ -73,4 +73,6 @@ void GltnShaderPipeline::draw(gm::GltnGraphicsContext ctx,
     glUseProgram(shaderID);
     glDrawArrays(GL_TRIANGLES, 0, verticesNum*3); 
         
+}
+
 }

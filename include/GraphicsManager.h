@@ -16,16 +16,16 @@
 #include "../include/GraphicsContext.h"
 using namespace glm;
 
-namespace gm {
+namespace gluten {
 
     GLuint setupGraphicsManager(GLFWwindow* window, glm::mat4& Projection, float projectionAngle);
     GLuint drawColoredArray(int attribLocation, int attribSize, 
-                        GltnGraphicsContext, glm::mat4 Model,
+                        GraphicsContext, glm::mat4 Model,
                         GLuint programID, GLuint vertexbuffer, GLuint colorbuffer,
                         int buffer_size
                     );
     GLuint drawTexturedArray(int attribLocation, int attribSize, 
-                        GltnGraphicsContext, glm::mat4 Model,
+                        GraphicsContext, glm::mat4 Model,
                         GLuint programID, GLuint vertexbuffer, GLuint colorbuffer,
                         int buffer_size
                     );
@@ -36,13 +36,13 @@ namespace gm {
 
     class GltnObject {
         virtual void load(std::string path) = 0;
-        virtual void display(GltnGraphicsContext) = 0;
+        virtual void display(GraphicsContext) = 0;
     };
 
     // Object representing internal data, unrelated to loading and drawing
     // This may be updated as we go
-    struct GltnInternal {
-        std::shared_ptr<shader::GltnShaderPipeline> pipeline;
+    struct ObjectInternal {
+        std::shared_ptr<gluten::ShaderPipeline> pipeline;
         glm::mat4 mvp;
         std::vector<vec3> normals;
         std::vector<vec3> vertices;
@@ -52,48 +52,48 @@ namespace gm {
         GLuint vertexbuffer;
         float brightnessScalar = 1.0;
         glm::mat4 model = glm::mat4(1.0f);
-        GltnInternal(std::shared_ptr<shader::GltnShaderPipeline> pipeline): pipeline{pipeline} {} 
-        GltnInternal *addUpdate(std::function<void(glm::mat4& model)> fp);
+        ObjectInternal(std::shared_ptr<gluten::ShaderPipeline> pipeline): pipeline{pipeline} {} 
+        ObjectInternal *addUpdate(std::function<void(glm::mat4& model)> fp);
         void updateModel(std::function<void(glm::mat4& model)> fp);
-        void display(GltnGraphicsContext ctx);
-        GltnInternal *addBrightnessScalar(std::string name);
-        GltnInternal *addMVP(std::string name);
-        GltnInternal *addVertexBuffer();
-        GltnInternal *addUniformVariable(std::string name, void *data);
-        GltnInternal *addInShaderVariable(GLuint *buffer);
+        void display(GraphicsContext ctx);
+        ObjectInternal *addBrightnessScalar(std::string name);
+        ObjectInternal *addMVP(std::string name);
+        ObjectInternal *addVertexBuffer();
+        ObjectInternal *addUniformVariable(std::string name, void *data);
+        ObjectInternal *addInShaderVariable(GLuint *buffer);
     };
 
-    class GltnUVObject : public GltnObject {
+    class UVObject : public GltnObject {
         public:
             std::vector<vec2> uvs;
 
-            GltnInternal internals;
+            ObjectInternal internals;
 	        GLuint uvbuffer;
             GLuint textureID = 0;
 
-            GltnUVObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) 
+            UVObject(std::string path, std::shared_ptr<gluten::ShaderPipeline> pipeline) 
                 : internals{pipeline}{
                 load(path);
             }
             void load(std::string path) override;
-            void display(GltnGraphicsContext) override;
+            void display(GraphicsContext) override;
             void usingTexture(std::string);
             void updateModel(std::function<void(glm::mat4& model)> fp);
 
     };
-    class GltnNonUVObject : public GltnObject {
+    class NonUVObject : public GltnObject {
         public:
             std::vector<vec3> colors;
 	        GLuint colorbuffer;
-            GltnInternal internals;
+            ObjectInternal internals;
             void load(std::string path) override;
-            void display(GltnGraphicsContext) override;
+            void display(GraphicsContext) override;
             
             void updateModel(std::function<void(glm::mat4& model)> fp){
                 internals.updateModel(fp);
             }
 
-            GltnNonUVObject(std::string path, std::shared_ptr<shader::GltnShaderPipeline> pipeline) 
+            NonUVObject(std::string path, std::shared_ptr<gluten::ShaderPipeline> pipeline) 
                 : internals{pipeline}{
                 load(path);
             }

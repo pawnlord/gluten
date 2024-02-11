@@ -18,7 +18,7 @@
 #include "../include/GraphicsContext.h"
 #include "../include/ResourceManager.h"
 
-namespace shader{
+namespace gluten{
 
 enum ShaderInputType {
     Vec3, Mat4, Float1
@@ -36,23 +36,23 @@ struct VertexShaderInput {
     VertexShaderInput(int attribNum, int attribSize) : attribNum{attribNum}, attribSize{attribSize} {}
 };
 
-class GltnShaderPipeline;
+class ShaderPipeline;
 
-class GltnShaderPipeline{
+class ShaderPipeline{
     public:
     int attribLocation;
     std::vector<UniformShaderInput> uniforms; // Inputs uniform accross shader "instances?"
     std::vector<VertexShaderInput> vertexInputs;  // Inputs with buffers for vertex shaders
     GLuint shaderID;
-    GltnShaderPipeline(std::string vertexShader, std::string fragmentShader, int attribLocation) 
+    ShaderPipeline(std::string vertexShader, std::string fragmentShader, int attribLocation) 
         : attribLocation{attribLocation} {
         // TODO: Cache Shaders
         shaderID = rm::LoadShaders(vertexShader.c_str(), fragmentShader.c_str());
     }
 
-    GltnShaderPipeline *addUniformVariable(ShaderInputType type, std::string name);
-    GltnShaderPipeline *addInShaderVariable(int attribNum, int attribSize);
-    void draw(gm::GltnGraphicsContext ctx, 
+    ShaderPipeline *addUniformVariable(ShaderInputType type, std::string name);
+    ShaderPipeline *addInShaderVariable(int attribNum, int attribSize);
+    void draw(gluten::GraphicsContext ctx, 
         glm::mat4 Model, 
         int verticesNum, 
         const std::unordered_map<std::string, void *>& uniformValues, 
