@@ -50,7 +50,8 @@ add_executable(${PROJECT_NAME} source/main.cpp
                                source/GraphicsManager.cpp
                                source/InputManager.cpp
                                source/ResourceManager.cpp
-                               source/Shader.cpp)
+                               source/Shader.cpp
+                               source/ObjectGenerator.cpp)
 
 include_directories(${GLEW_INCLUDE_DIRS})
 link_libraries(${GLEW_LIBRARIES})

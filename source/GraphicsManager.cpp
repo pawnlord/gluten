@@ -96,7 +96,7 @@ namespace gluten {
     void UVObject::load(std::string path){
         rm::loadObjWithUV(path.c_str(), internals.vertices, uvs, internals.normals);  
         gluten::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices);
-        gluten::genBuffer2(&uvbuffer, internals.vertices.size()*6*3, uvs);  
+        gluten::genBuffer2(&uvbuffer, internals.vertices.size()*6*3, uvs);
     }
 
     void NonUVObject::load(std::string path){
@@ -105,6 +105,8 @@ namespace gluten {
         for(auto v : internals.vertices){
             colors.push_back(glm::vec3(1.0, 1.0, 1.0));
         }
+        printf("%d %d\n", (int)internals.vertices.size(), (int)colors.size());
+
         gluten::genBuffer3(&colorbuffer, colors.size()*6*3, colors);
     }
 

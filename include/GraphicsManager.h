@@ -109,14 +109,15 @@ namespace gluten {
             }
 
             NonUVObject(std::string path, std::shared_ptr<gluten::ShaderPipeline> pipeline) 
-                    : internals{pipeline}{
+                    : internals{pipeline} {
                 load(path);
             }
             
             
             NonUVObject(ObjectInternal internals, std::vector<vec3> colors) 
                     : internals{internals}, colors{colors} {
-                gluten::genBuffer3(&colorbuffer, colors.size()*6*3, colors);
+                genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices);
+                genBuffer3(&colorbuffer, colors.size()*6*3, colors);
             }
     };
 
