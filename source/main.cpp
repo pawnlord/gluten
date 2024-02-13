@@ -52,31 +52,32 @@ int main() {
             ->addVertexBuffer()
             ->addInShaderVariable(&skewedCube.uvbuffer);
 
-    NonUVObject *tris = ObjectGenerator().addPipeline(std::shared_ptr<ShaderPipeline>(&colorPipeline))
+    std::shared_ptr<NonUVObject> tris = ObjectGenerator().addPipeline(std::shared_ptr<ShaderPipeline>(&colorPipeline))
                      ->addTri(
                         glm::vec3(0.0, 0.0, 0.0),
                         glm::vec3(1.0, 0.0, 0.0),
-                        glm::vec3(0.0, 1.0, 0.0),
+                        glm::vec3(0.0, 0.0, 1.0),
                         glm::vec3(1.0, 0.0, 0.0)
                      )
                      ->addTri(
                         glm::vec3(0.0, 0.0, 0.0),
-                        glm::vec3(0.0, 0.0, 1.0),
+                        glm::vec3(1.0, 0.0, 0.0),
                         glm::vec3(0.0, 1.0, 0.0),
-                        glm::vec3(1.0, 0.0, 0.0)
+                        glm::vec3(1.0, 1.0, 0.0)
                      )
                      ->generate(); 
 
     GLfloat t = 0;
 
-    skewedCube.internals.addUpdate([&](auto& model) {
-        model = glm::mat4(1.0);
-        model = glm::translate(model, glm::vec3(0, glm::sin(t) * 3, 0));
-    });
-
 
     InputInfo inputInfo;
     Camera camera;
+    
+    skewedCube.internals.addUpdate([&](auto model) {
+        model = mat4(1);
+        model = glm::translate(model, vec3(-2.0, 0, 0));
+        return model;
+    });
 
     registerInputInfo(inputInfo);
 
@@ -95,9 +96,10 @@ int main() {
         ctx.projection = camera.getProjectionMatrix();
 
         tris->display(ctx);
+        
         skewedCube.display(ctx);
-
         glDisableVertexAttribArray(0);
+        
 
         glfwSwapBuffers(ctx.window);
         glfwPollEvents();

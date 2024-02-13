@@ -25,10 +25,10 @@ ShaderPipeline *ShaderPipeline::addInShaderVariable(int attribNum, int attribSiz
 }
 
 void ShaderPipeline::draw(gluten::GraphicsContext ctx, 
-        glm::mat4 Model, 
+        glm::mat4 model, 
         int verticesNum, 
         const std::unordered_map<std::string, void *>& uniformValues, 
-        const std::vector<GLuint*>& buffers){
+        const std::vector<GLuint*>& buffers) {
 
     
     if(buffers.size() != vertexInputs.size()){

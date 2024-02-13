@@ -23,11 +23,11 @@ ObjectGenerator *ObjectGenerator::addPipeline(std::shared_ptr<ShaderPipeline> pi
     return this;
 }
 
-NonUVObject *ObjectGenerator::generate() {
+std::shared_ptr<NonUVObject> ObjectGenerator::generate() {
     ObjectInternal internals{pipeline};
     internals.vertices = vertices;
     
-    NonUVObject *object = new NonUVObject{internals, colors};
+    std::shared_ptr<NonUVObject> object = std::make_shared<NonUVObject>(internals, colors);
 
     // TODO: This is making assumptions about our shader pipeline
     // Best to change this later

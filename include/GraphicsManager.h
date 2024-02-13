@@ -48,7 +48,7 @@ namespace gluten {
         std::vector<vec3> vertices;
         std::unordered_map<std::string, void *> uniformValues;
         std::vector<GLuint*> buffers;
-        std::vector<std::function<void(glm::mat4& model)>> updates;
+        std::vector<std::function<glm::mat4(glm::mat4 model)>> updates;
         GLuint vertexbuffer;
         float brightnessScalar = 1.0;
         glm::mat4 model = glm::mat4(1.0f);
@@ -56,7 +56,7 @@ namespace gluten {
         ObjectInternal(std::shared_ptr<gluten::ShaderPipeline> pipeline): pipeline{pipeline} {} 
         
         // Add to the update process
-        ObjectInternal *addUpdate(std::function<void(glm::mat4& model)> fp);
+        ObjectInternal *addUpdate(std::function<glm::mat4(glm::mat4 model)> fp);
         
         // Update and display model
         void updateModel(std::function<void(glm::mat4& model)> fp);
@@ -104,6 +104,11 @@ namespace gluten {
             void load(std::string path) override;
             void display(GraphicsContext) override;
             
+            void genBuffers() {
+                genBuffer3(&this->internals.vertexbuffer, this->internals.vertices.size()*4*3, this->internals.vertices);
+                genBuffer3(&this->colorbuffer, this->colors.size()*4*3, this->colors);
+            }
+
             void updateModel(std::function<void(glm::mat4& model)> fp){
                 internals.updateModel(fp);
             }
@@ -116,8 +121,7 @@ namespace gluten {
             
             NonUVObject(ObjectInternal internals, std::vector<vec3> colors) 
                     : internals{internals}, colors{colors} {
-                genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices);
-                genBuffer3(&colorbuffer, colors.size()*6*3, colors);
+                genBuffers();
             }
     };
 

@@ -35,7 +35,7 @@ struct ObjectGenerator {
     
     ObjectGenerator *addPipeline(std::shared_ptr<ShaderPipeline> pipeline);
     
-    NonUVObject *generate();
+    std::shared_ptr<NonUVObject> generate();
 };
 
 } // namespace gluten
