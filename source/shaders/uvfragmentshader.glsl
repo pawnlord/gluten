@@ -8,10 +8,10 @@ in float brightness;
 out vec3 color;
 
 // Values that stay constant for the whole mesh.
-uniform sampler2D myTextureSampler;
+uniform sampler2D sampler;
 
 void main(){
 
     // Output color = color of the texture at the specified UV
-    color = texture( myTextureSampler, UV ).rgb * brightness;
+    color = texture( sampler, UV ).rgb * brightness;
 }

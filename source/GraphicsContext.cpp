@@ -6,8 +6,8 @@
 // Include GLFW
 #include <GLFW/glfw3.h>
 
-#include "../include/GraphicsManager.h"
-#include "../include/ResourceManager.h"
+#include "GraphicsManager.h"
+#include "ResourceManager.h"
 
 namespace gluten {
 

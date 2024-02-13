@@ -1,3 +1,5 @@
+#include "GraphicsManager.h"
+
 // #define GLEW_STATIC
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,8 +12,7 @@
 // Include GLFW
 #include <GLFW/glfw3.h>
 
-#include "../include/GraphicsManager.h"
-#include "../include/ResourceManager.h"
+#include "ResourceManager.h"
 
 namespace gluten {
 
@@ -94,18 +95,17 @@ namespace gluten {
 
     void UVObject::load(std::string path){
         rm::loadObjWithUV(path.c_str(), internals.vertices, uvs, internals.normals);  
-        gluten::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices); // TODO: why *4?
-        gluten::genBuffer2(&uvbuffer, internals.vertices.size()*6*3, uvs); // TODO: why *4?
-
+        gluten::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices);
+        gluten::genBuffer2(&uvbuffer, internals.vertices.size()*6*3, uvs);  
     }
 
     void NonUVObject::load(std::string path){
         rm::loadObjWithoutUV(path.c_str(), internals.vertices, internals.normals);  
-        gluten::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices); // TODO: why *4?
+        gluten::genBuffer3(&internals.vertexbuffer, internals.vertices.size()*6*3, internals.vertices);
         for(auto v : internals.vertices){
             colors.push_back(glm::vec3(1.0, 1.0, 1.0));
         }
-        gluten::genBuffer3(&colorbuffer, colors.size()*6*3, colors); // TODO: why *4?
+        gluten::genBuffer3(&colorbuffer, colors.size()*6*3, colors);
     }
 
     void NonUVObject::display(GraphicsContext ctx) {
@@ -124,7 +124,10 @@ namespace gluten {
     }
 
     void UVObject::usingTexture(std::string path){
-    	textureID = rm::loadBMP(path);
+    	if (path == ""){
+            return;
+        }
+        textureID = rm::loadBMP(path);
     }
     
 }

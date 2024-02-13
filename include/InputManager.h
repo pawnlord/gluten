@@ -1,3 +1,7 @@
+#ifndef INPUTMANAGER_H
+#define INPUTMANAGER_H
+
+
 // #define GLEW_STATIC
 #include <stdio.h>
 // Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
@@ -29,3 +33,5 @@ namespace gluten {
     void computeMatricesFromInputs(GLFWwindow* window, Camera& cam, InputInfo& inf);
     void registerInputInfo(InputInfo& info);
 }
+
+#endif

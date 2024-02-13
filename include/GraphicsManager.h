@@ -5,12 +5,9 @@
 #include <string>
 #include <functional>
 
-// Include GLEW. Always include it before gl.h and glfw3.h, since it's a bit magic.
 #include <GL/glew.h>
-// Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-// Include GLFW
 #include <GLFW/glfw3.h>
 #include "Shader.h"
 #include "../include/GraphicsContext.h"
@@ -39,8 +36,11 @@ namespace gluten {
         virtual void display(GraphicsContext) = 0;
     };
 
-    // Object representing internal data, unrelated to loading and drawing
-    // This may be updated as we go
+
+    // Object representing internal data of a displayed object, including the render pipeline
+    // and update information
+    // This is the data common to all objects
+    // By being a separate data type, it allows us to pass it in to any other object we create
     struct ObjectInternal {
         std::shared_ptr<gluten::ShaderPipeline> pipeline;
         glm::mat4 mvp;
@@ -52,10 +52,18 @@ namespace gluten {
         GLuint vertexbuffer;
         float brightnessScalar = 1.0;
         glm::mat4 model = glm::mat4(1.0f);
+        
         ObjectInternal(std::shared_ptr<gluten::ShaderPipeline> pipeline): pipeline{pipeline} {} 
+        
+        // Add to the update process
         ObjectInternal *addUpdate(std::function<void(glm::mat4& model)> fp);
+        
+        // Update and display model
         void updateModel(std::function<void(glm::mat4& model)> fp);
         void display(GraphicsContext ctx);
+        
+
+        // Add to the shader pipeline
         ObjectInternal *addBrightnessScalar(std::string name);
         ObjectInternal *addMVP(std::string name);
         ObjectInternal *addVertexBuffer();
@@ -71,10 +79,17 @@ namespace gluten {
 	        GLuint uvbuffer;
             GLuint textureID = 0;
 
-            UVObject(std::string path, std::shared_ptr<gluten::ShaderPipeline> pipeline) 
-                : internals{pipeline}{
+            UVObject(std::string path, std::shared_ptr<gluten::ShaderPipeline> pipeline, std::string texturePath = "") 
+                   : internals{pipeline}{
                 load(path);
+                usingTexture(texturePath);
             }
+
+            UVObject(ObjectInternal internals, std::string texturePath = "") 
+                    : internals{internals} {
+                usingTexture(texturePath);
+            }
+
             void load(std::string path) override;
             void display(GraphicsContext) override;
             void usingTexture(std::string);
@@ -94,10 +109,17 @@ namespace gluten {
             }
 
             NonUVObject(std::string path, std::shared_ptr<gluten::ShaderPipeline> pipeline) 
-                : internals{pipeline}{
+                    : internals{pipeline}{
                 load(path);
             }
             
+            
+            NonUVObject(ObjectInternal internals, std::vector<vec3> colors) 
+                    : internals{internals}, colors{colors} {
+                gluten::genBuffer3(&colorbuffer, colors.size()*6*3, colors);
+            }
     };
+
+
 }
 #endif

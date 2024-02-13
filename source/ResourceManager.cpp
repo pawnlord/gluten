@@ -1,4 +1,4 @@
-#include "../include/ResourceManager.h"
+#include "ResourceManager.h"
 
 #include <stdio.h>
 #include <stdlib.h>

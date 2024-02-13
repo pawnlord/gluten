@@ -1,5 +1,3 @@
-#ifndef INPUTMANAGER_H
-#define INPUTMANAGER_H
 
 // #define GLEW_STATIC
 #include <stdio.h>
@@ -9,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
 
-#include "../include/InputManager.h"
+#include "InputManager.h"
 namespace gluten {
 InputInfo *activeInfo = nullptr;
 
@@ -67,4 +65,3 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 }
 
 }  // namespace gluten
-#endif
