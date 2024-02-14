@@ -30,21 +30,22 @@ void ShaderPipeline::draw(gluten::GraphicsContext ctx,
         const std::unordered_map<std::string, void *>& uniformValues, 
         const std::vector<GLuint*>& buffers) {
 
-    
-    if(buffers.size() != vertexInputs.size()){
+    glUseProgram(this->shaderID);
+    if(buffers.size() != this->vertexInputs.size()){
         std::stringstream message;
-        message << "Invalid number of buffers for " << shaderID << ": " << vertexInputs.size() << " vertex inputs != " << buffers.size() << " buffers"; 
+        message << "Invalid number of buffers for " << this->shaderID << ": " << this->vertexInputs.size() << " vertex inputs != " << buffers.size() << " buffers"; 
         throw std::invalid_argument(message.str());
     }
 
     for(const auto& uniform : this->uniforms){
-        GLuint id = glGetUniformLocation(shaderID, uniform.name.c_str());
-        // stupid bit-hack
+        GLuint id = glGetUniformLocation(this->shaderID, uniform.name.c_str());
+
         if(id == ~0){
             std::stringstream message;
-            message << "Inavlid Uniform variable in shader " << shaderID << ": Was unable to find uniform " << uniform.name; 
+            message << "Inavlid Uniform variable in shader " << this->shaderID << ": Was unable to find uniform " << uniform.name; 
             throw std::invalid_argument(message.str());
         }
+
         void *data = uniformValues.at(uniform.name);
 	    switch(uniform.type){
             case Mat4:
@@ -58,6 +59,7 @@ void ShaderPipeline::draw(gluten::GraphicsContext ctx,
             break;
         }
     }
+
     for(const auto& vertexInput : this->vertexInputs){
         glEnableVertexAttribArray(vertexInput.attribNum);
         // assumptions that need to be checked: attrib nums are increasing, and easy to put in order
@@ -70,7 +72,6 @@ void ShaderPipeline::draw(gluten::GraphicsContext ctx,
                 0, (void*)0);
 		
     }
-    glUseProgram(shaderID);
     glDrawArrays(GL_TRIANGLES, 0, verticesNum*3); 
         
 }

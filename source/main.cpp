@@ -51,6 +51,7 @@ int main() {
             ->addMVP("MVP")
             ->addVertexBuffer()
             ->addInShaderVariable(&skewedCube.uvbuffer);
+    
 
     std::shared_ptr<NonUVObject> tris = ObjectGenerator().addPipeline(std::shared_ptr<ShaderPipeline>(&colorPipeline))
                      ->addTri(
@@ -61,11 +62,12 @@ int main() {
                      )
                      ->addTri(
                         glm::vec3(0.0, 0.0, 0.0),
-                        glm::vec3(1.0, 0.0, 0.0),
+                        glm::vec3(0.0, 0.0, 1.0),
                         glm::vec3(0.0, 1.0, 0.0),
                         glm::vec3(1.0, 1.0, 0.0)
                      )
                      ->generate(); 
+
 
     GLfloat t = 0;
 
@@ -75,13 +77,20 @@ int main() {
     
     skewedCube.internals.addUpdate([&](auto model) {
         model = mat4(1);
-        model = glm::translate(model, vec3(-2.0, 0, 0));
+        model = glm::translate(model, vec3(-4.0, 0, 0));
+        return model;
+    });
+    
+    tris->internals.addUpdate([&](auto model) {
+        model = mat4(1);
+        model = glm::translate(model, vec3(2.0, 0, 0));
         return model;
     });
 
+
     registerInputInfo(inputInfo);
 
-    inputInfo.setBrightnessScalar(&skewedCube.internals.brightnessScalar);
+    // inputInfo.setBrightnessScalar(&skewedCube.internals.brightnessScalar);
 
     glfwSetScrollCallback(ctx.window, scrollCallback);
 
@@ -96,8 +105,8 @@ int main() {
         ctx.projection = camera.getProjectionMatrix();
 
         tris->display(ctx);
-        
         skewedCube.display(ctx);
+
         glDisableVertexAttribArray(0);
         
 
@@ -105,6 +114,5 @@ int main() {
         glfwPollEvents();
         t += (GLfloat)0.0005;
 
-    }  // Check if the ESC key was pressed or the window was closed
-    while (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(ctx.window) == 0);
+    } while (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(ctx.window) == 0);
 }

@@ -60,8 +60,8 @@ namespace gluten {
         for (auto& update : this->updates) {
             this->model = update(this->model);
         }
-        this->mvp = ctx.projection * ctx.view * this->model; // Remember, matrix multiplication is the other way around
-        pipeline->draw(ctx, model, (GLuint)vertices.size(), uniformValues, buffers);
+        this->mvp = ctx.projection * ctx.view * this->model; 
+        pipeline->draw(ctx, model, (GLuint)vertices.size(), uniformValues, this->buffers);
     }
 
     ObjectInternal *ObjectInternal::addBrightnessScalar(std::string name){
@@ -82,7 +82,7 @@ namespace gluten {
     }
 
     ObjectInternal *ObjectInternal::addInShaderVariable(GLuint *buffer){
-        buffers.push_back(buffer);
+        this->buffers.push_back(buffer);
         return this;
     }
 
