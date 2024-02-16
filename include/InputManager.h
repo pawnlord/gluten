@@ -17,7 +17,7 @@
 namespace gluten {
     struct InputInfo {
         double lastTime = 0;
-        float speed = 3.0f;  // 3 units / second
+        float speed = 15.0f;  // 3 units / second
         float mouseSpeed = 0.007f;
         float* brightnessScalar = nullptr;
         InputInfo **active = nullptr;

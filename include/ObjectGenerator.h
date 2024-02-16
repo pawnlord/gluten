@@ -32,6 +32,18 @@ struct ObjectGenerator {
         glm::vec3 p4,
         glm::vec3 color
     );
+
+    ObjectGenerator *addCuboid(
+        glm::vec3 p1,
+        glm::vec3 p2,
+        glm::vec3 p3,
+        glm::vec3 p4,
+        glm::vec3 p5,
+        glm::vec3 p6,
+        glm::vec3 p7,
+        glm::vec3 p8,
+        glm::vec3 color
+    );
     
     ObjectGenerator *addPipeline(std::shared_ptr<ShaderPipeline> pipeline);
     

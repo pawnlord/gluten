@@ -37,14 +37,15 @@ namespace gluten {
             fprintf(stderr, "Failed to initialize GLEW\n");
             exit(-1);
         }
-        // Ensure we can capture the escape key being pressed below
+        
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-        // Enable depth test
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);  
+
         // Accept fragment if it closer to the camera than the former one
         glDepthFunc(GL_LESS);
-        /* SETUP COMPLETE
-        */
+
+        /* SETUP COMPLETE */
 
         glGenVertexArrays(1, &VertexArrayID);
         glBindVertexArray(VertexArrayID);
@@ -52,7 +53,7 @@ namespace gluten {
 
 		glfwGetWindowSize(window, &width, &height);
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-		projection = glm::perspective(glm::radians(projectionAngle), (float) width / (float)height, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(projectionAngle), (float) width / (float)height, 0.1f, 1000.0f);
         
         glfwSetCursorPos(window, width/2, height/2);
         

@@ -18,6 +18,18 @@ ObjectGenerator *ObjectGenerator::addTri(
     return this;
 }
 
+
+ObjectGenerator *ObjectGenerator::addQuad(
+    glm::vec3 p1,
+    glm::vec3 p2,
+    glm::vec3 p3,
+    glm::vec3 p4,
+    glm::vec3 color
+) {
+    addTri(p3, p2, p1, color);
+    addTri(p2, p3, p4, color);
+    return this;
+}
 ObjectGenerator *ObjectGenerator::addPipeline(std::shared_ptr<ShaderPipeline> pipeline) {
     this->pipeline = pipeline;
     return this;

@@ -40,6 +40,7 @@ set_target_properties(glfw PROPERTIES
 include_directories(${PROJECT_SOURCE_DIR}/lib/glm/)
 include_directories(${PROJECT_SOURCE_DIR}/lib/glfw/include)
 include_directories(${PROJECT_SOURCE_DIR}/lib/stb)
+include_directories(${PROJECT_SOURCE_DIR}/lib/perlinnoise)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 # include_directories(${PROJECT_SOURCE_DIR}/lib/glew/include)
 set(GLM_TEST_ENABLE OFF CACHE BOOL "GLM Build unit tests")
@@ -51,6 +52,7 @@ add_executable(${PROJECT_NAME} source/main.cpp
                                source/InputManager.cpp
                                source/ResourceManager.cpp
                                source/Shader.cpp
+                               source/TerrainGenerator.cpp
                                source/ObjectGenerator.cpp)
 
 include_directories(${GLEW_INCLUDE_DIRS})
